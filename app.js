@@ -11,10 +11,10 @@ var ethRouter = require('./routes/eth');
 var web3Lib = require('web3');
 
 //GANACHE
-//var web3 = new web3Lib("http://localhost:7545");
+var web3 = new web3Lib("http://localhost:7545");
 
 //LOCAL PARITY NODE
-var web3 = new web3Lib("http://localhost:8540");
+// var web3 = new web3Lib("http://localhost:8540");
 
 global.web3 = web3;
 

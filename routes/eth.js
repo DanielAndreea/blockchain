@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var signedTx = require('../bll/signedTransaction');
 var unlockAccount = require('../bll/unlockAccount');
+var deploy = require('../bll/deploy');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -18,6 +19,7 @@ router.get('/accounts', function(req,res,next){
       });
 })
 
+//transaction using ganache accounts
 router.post('/transaction', function(req,res,next){
   console.log('provider' , web3.currentProvider);
   web3.eth.isMining().then(console.log);
@@ -26,6 +28,7 @@ router.post('/transaction', function(req,res,next){
   web3.eth.sendTransaction({from: acc1, to: acc2, value: web3.utils.toWei('1','ether')});
 })
 
+//get balance of specified account
 router.get('/balance', function(req,res,next){
   var acc1 = req.body.account;
   web3.eth.getBalance(acc1, function(err,result) {res.send(result); console.log(result)})
@@ -37,4 +40,6 @@ router.post('/signedTx', signedTx.signedTx);
 //SEND TRANSACTION + UNLOCK ACCOUNTS -> local parity node
 router.post('/unlockAccounts',unlockAccount.unlockAccounts );
 
+//DEPLOY SMART CONTRACT -> using remix and ganache account
+router.post('/deployContract',deploy.deployContract );
 module.exports = router;
