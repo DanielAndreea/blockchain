@@ -13,7 +13,7 @@ exports.deployContract = function (req, res) {
     console.log(simplestorageContract.methods);
     simplestorageContract.methods.get().call((err,result)=>{console.log(result);  res.send(result)});
 
-    //USED TO CREATE THE CONTRACT; used only once
+    // USED TO CREATE THE CONTRACT; used only once
     // web3.eth.getTransactionCount(account1, (err, txCount) => {
     //     console.log(txCount);
     //

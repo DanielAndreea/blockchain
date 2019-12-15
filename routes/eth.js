@@ -3,6 +3,7 @@ var router = express.Router();
 var signedTx = require('../bll/signedTransaction');
 var unlockAccount = require('../bll/unlockAccount');
 var deploy = require('../bll/deploy');
+var write = require('../bll/writeContract');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -42,4 +43,7 @@ router.post('/unlockAccounts',unlockAccount.unlockAccounts );
 
 //DEPLOY SMART CONTRACT -> using remix and ganache account
 router.post('/deployContract',deploy.deployContract );
+
+//ACCESS SMART CONTRACT METHODS
+router.post('/writeContract', write.writeContract);
 module.exports = router;
