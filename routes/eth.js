@@ -4,6 +4,7 @@ var signedTx = require('../bll/signedTransaction');
 var unlockAccount = require('../bll/unlockAccount');
 var deploy = require('../bll/deploy');
 var write = require('../bll/writeContract');
+var events = require('../bll/events');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -46,4 +47,7 @@ router.post('/deployContract',deploy.deployContract );
 
 //ACCESS SMART CONTRACT METHODS
 router.post('/writeContract', write.writeContract);
+
+//EVENTS
+router.get('/events', events.events);
 module.exports = router;
