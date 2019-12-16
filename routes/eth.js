@@ -5,6 +5,7 @@ var unlockAccount = require('../bll/unlockAccount');
 var deploy = require('../bll/deploy');
 var write = require('../bll/writeContract');
 var events = require('../bll/events');
+var storageContract = require('../bll/storageContract');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -50,4 +51,10 @@ router.post('/writeContract', write.writeContract);
 
 //EVENTS
 router.get('/events', events.events);
+
+//STORAGE CONTRACT ROUTES
+router.post('/deployStorageContract', storageContract.deployStorageContract);
+
+router.post('/storageSet', storageContract.setStorageContract);
+router.post('/storageGet', storageContract.getStorageContract);
 module.exports = router;
