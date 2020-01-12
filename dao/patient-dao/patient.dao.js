@@ -1,14 +1,14 @@
 
-exports.registerPatient = function (patientToInsert, contract) {
+exports.registerPatient = function (patientToInsert) {
     patientToInsert.save()
         .then(data => {
             console.log('SAVED PATIENT TO DB: ', data);
-            saveContract(contract);
+            // saveContract(contract);
         })
         .catch(error => console.log('FROM PATIENT DAO ', error));
 }
 
-function saveContract(contractToInsert) {
+exports.saveContract = function(contractToInsert) {
     contractToInsert.save()
         .then(data => {
             console.log('SAVED CONTRACT TO DB: ', data);

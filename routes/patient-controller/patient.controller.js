@@ -11,20 +11,19 @@ var binJSON ='././contracts/compiled/PatientContract_sol_PatientContract.bin';
 var BIN = fs.readFileSync(path.resolve(binJSON));
 
 //first deployed contract: 0x14b8766224f5A22791d7f27abF2e23b731296358
-const deployAddress = '';
-router.post('/deploy', function(req,res){
+let deployAddress = '';
+router.post('/deploy', (req,res) => {
     const account = req.body.account;
     const password = req.body.password;
 
-
-    const deployAddress = PatientService.deployPatientContract(account,password,parsedABI,'0x'+BIN)
-    console.log(contractAddress);
-    res.send(contractAddress);
+   PatientService.deployPatientContract(account,password,parsedABI,'0x'+BIN, (data) =>{
+       console.log(data);
+       res.send(data);
+   });
 })
 
-router.post('/register', function(req,res){
+router.post('/register', (req,res) =>{
     const patient = req.body.patient;
-    const contract = req.body.contract;
-    PatientService.registerPatient(patient,contract);
+    PatientService.registerPatient(patient);
 })
 module.exports = router;

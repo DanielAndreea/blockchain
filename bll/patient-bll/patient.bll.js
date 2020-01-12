@@ -2,35 +2,26 @@ var patientDao = require('../../dao/patient-dao/patient.dao');
 var UserModel = require('../../models/user.model');
 var ContractModel = require('../../models/contract.model');
 
-
-exports.registerPatient = function (patient, contract) {
+const contractPatientType = 'PATIENT_CONTRACT';
+exports.registerPatient = function (patient, contractAddress) {
+    console.log('RECEIVED CONTRACT ADDRESS: ', contractAddress);
     let patientToInsert = new UserModel({
-        userIdentifier: patient.userIdentifier,
         username: patient.username,
         password: patient.password,
         account: patient.account,
         accountPassword: patient.accountPassword
     })
 
-    let contractToInsert = new ContractModel({
-        idContract: contract.idContract,
-        contractName: contract.contractName,
-        contractAddress: contract.contractAddress,
-        contractOwner: patient.account
-    })
-
-    patientDao.registerPatient(patientToInsert, contractToInsert);
+    patientDao.registerPatient(patientToInsert);
 }
 
 
-exports.deployPatientContract = function (account, password, abi, bin) {
+exports.deployPatientContract = function (account, password, abi, bin, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) {
             console.log('Account cannot be unlocked ', err);
         } else {
             console.log("Account unlocked!");
-            console.log("ABI: ", abi);
-            console.log("BIN: ", bin);
         }
 
         const patientContract = new web3.eth.Contract(abi);
@@ -43,7 +34,15 @@ exports.deployPatientContract = function (account, password, abi, bin) {
             })
             .then((instance) => {
                 console.log("CONTRACT DEPLOYED AT ADDRESS: ", instance.options.address);
-                return instance.options.address;
+                // callback(instance.options.address)
+                let contractToInsert = new ContractModel({
+                    contractName: contractPatientType,
+                    contractAddress: instance.options.address,
+                    contractOwner: account
+                })
+                patientDao.saveContract(contractToInsert);
+                callback(instance.options.address);
+                // return instance.options.address;
             })
             .catch(console.log);
     })
