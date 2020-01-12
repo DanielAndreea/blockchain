@@ -10,9 +10,6 @@ var binJson = './contracts/compiled/Counter_sol_Counter.bin';
 var parsedBIN = fs.readFileSync(path.resolve(binJson));
 
 
-console.log('ABI: ', parsedABI);
-console.log('BIN: ', parsedBIN);
-
 var contractAddress = '';
 
 exports.deployStorageContract = function(req,res){

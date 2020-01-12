@@ -3,9 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var ethRouter = require('./routes/eth');
+var patientController = require('./routes/patient-controller/patient.controller');
 
 //WEB 3
 var web3Lib = require('web3');
@@ -32,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/eth', ethRouter);
+app.use('/patient', patientController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -48,5 +51,28 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+app.listen(8080, () =>{
+  console.log("Server is listening on port 8080.");
+  connectToDatabase();
+})
+//DATABASE CONNECTION
+function connectToDatabase(){
+  mongoose.Promise = global.Promise;
+  mongoose.connect('mongodb://localhost:27017/ethmed?authSource=ethmed');
+
+  mongoose.connection.on('connected', function () {
+    console.log("Connected to 'ethmed' database.");
+  });
+
+  mongoose.connection.on('error', function (err) {
+    console.log("Mongoose connection error.");
+  });
+
+  mongoose.connection.on('disconnected', function () {
+    console.log("Mongoose disconnected.");
+  });
+
+}
 
 module.exports = app;

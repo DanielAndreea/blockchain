@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var signedTx = require('../bll/signedTransaction');
-var unlockAccount = require('../bll/unlockAccount');
-var deploy = require('../bll/deploy');
-var write = require('../bll/writeContract');
-var events = require('../bll/events');
-var storageContract = require('../bll/storageContract');
+var signedTx = require('../bll/tutorial/signedTransaction');
+var unlockAccount = require('../bll/tutorial/unlockAccount');
+var deploy = require('../bll/tutorial/deploy');
+var write = require('../bll/tutorial/writeContract');
+var events = require('../bll/tutorial/events');
+var storageContract = require('../bll/tutorial/storageContract');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

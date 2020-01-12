@@ -5,12 +5,13 @@ contract Counter {
     
     uint count; //state variable 
     //value of this variable will be written to blockchain
-    
+    address owner;
     
     //default value => constructor function
     //called when contract is created
     constructor() public{
         count = 0;
+        owner = msg.sender;
     }
     
     
@@ -27,6 +28,8 @@ contract Counter {
     //increment value
     //need to add visibility to functions => tell where the fct can be called
     //public => can be called outside the contract
+
+    //require adresa care semneaza sa fie "adresa"
     function increment() public{
         count += 1;        
         emit Increment(count); //emit event defined previously
