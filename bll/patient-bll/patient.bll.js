@@ -47,3 +47,36 @@ exports.deployPatientContract = function (account, password, abi, bin, callback)
             .catch(console.log);
     })
 }
+
+
+exports.registerUpdateContract = function (abi, account, password) {
+    //load contract
+    patientDao.getPatientIdentifier(account, (identifier) => {
+        console.log('IDENTIFIER: ', identifier);
+        patientDao.getContractAddressByAccount(account, (contractAddress) => {
+            console.log('CONTRACT ADDRESS: ', contractAddress);
+            var contract = new web3.eth.Contract(abi, contractAddress);
+            web3.eth.personal.unlockAccount(account, password, null, (err) => {
+                if (err) console.log(err);
+                web3.eth.sendTransaction({
+                    to: contractAddress,
+                    from: account,
+                    data: contract.methods.register(identifier.toString()).encodeABI()
+                })
+                    .then((data) => console.log(data))
+                    .catch(console.log);
+            })
+        });
+    });
+}
+
+exports.getPatientData = function(abi,account,password){
+    patientDao.getContractAddressByAccount(account, (contractAddress) => {
+        console.log('CONTRACT ADDRESS: ', contractAddress);
+        var contract = new web3.eth.Contract(abi, contractAddress);
+        web3.eth.personal.unlockAccount(account, password, null, (err,data) => {
+            if (err) console.log(err);
+            contract.methods.owner().call(console.log);
+        })
+    });
+}
