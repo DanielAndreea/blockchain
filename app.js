@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var ethRouter = require('./routes/eth');
-var patientController = require('./routes/patient-controller/patient.controller');
+var patientController = require('./routes/patient.controller');
 
 //WEB 3
 var web3Lib = require('web3');

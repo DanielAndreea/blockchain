@@ -1,11 +1,12 @@
-var UserModel = require('../../models/user.model');
-var ContractModel = require('../../models/contract.model');
+var UserModel = require('../models/user.model');
+var ContractModel = require('../models/contract.model');
 
-exports.registerPatient = function (patientToInsert) {
+exports.registerPatient = function (patientToInsert,callback) {
     patientToInsert.save()
         .then(data => {
             console.log('SAVED PATIENT TO DB: ', data);
             // saveContract(contract);
+            callback(data);
         })
         .catch(error => console.log('FROM PATIENT DAO ', error));
 }
@@ -18,8 +19,8 @@ exports.saveContract = function (contractToInsert) {
         .catch(error => console.log('FROM PATIENT DAO ', error));
 }
 
-exports.getPatientIdentifier = function (account, callback) {
-    UserModel.find({account: account})
+exports.getPatientIdentifier = function (username, callback) {
+    UserModel.find({username: username})
         .then((data) => {
             console.log(data[0]._id);
             callback(data[0]._id);
@@ -27,7 +28,15 @@ exports.getPatientIdentifier = function (account, callback) {
         .catch(console.log);
 }
 
-//TODO: get contract address by account -> return it
+exports.getPatientByUsername = function(username, callback){
+    UserModel.find({username: username})
+        .then( (data) =>{
+            console.log('data ',data);
+            callback(data);
+        })
+        .catch(console.log);
+}
+
 exports.getContractAddressByAccount = function (account, callback) {
     ContractModel.find({contractOwner: account})
         .then((contract) => {

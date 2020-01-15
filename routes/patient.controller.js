@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var PatientService = require('../../bll/patient-bll/patient.bll');
+var PatientService = require('../bll/patient.bll');
 var fs = require('fs');
 var path = require('path');
 
@@ -10,13 +10,9 @@ var parsedABI = JSON.parse(fs.readFileSync(path.resolve(abiJSON)));
 var binJSON = '././contracts/compiled/PatientContract_sol_PatientContract.bin';
 var BIN = fs.readFileSync(path.resolve(binJSON));
 
-//first deployed contract: 0x14b8766224f5A22791d7f27abF2e23b731296358
-let deployAddress = '';
 router.post('/deploy', (req, res) => {
-    const account = req.body.account;
-    const password = req.body.password;
-
-    PatientService.deployPatientContract(account, password, parsedABI, '0x' + BIN, (data) => {
+    const username = req.body.username;
+    PatientService.deployPatientContract(username, parsedABI, '0x' + BIN, (data) => {
         console.log(data);
         res.send(data);
     });
@@ -24,7 +20,9 @@ router.post('/deploy', (req, res) => {
 
 router.post('/register', (req, res) => {
     const patient = req.body.patient;
-    PatientService.registerPatient(patient);
+    PatientService.registerPatient(patient,() =>{
+        res.send(patient);
+    });
 })
 
 router.get('/getMongoIdentifier', (req, res) => {
@@ -32,9 +30,8 @@ router.get('/getMongoIdentifier', (req, res) => {
 })
 
 router.post('/register-contract', (req, res) => {
-    const account = req.body.account;
-    const password = req.body.password;
-    PatientService.registerUpdateContract(parsedABI, account, password);
+    const username = req.body.username;
+    PatientService.registerUpdateContract(parsedABI, username);
 })
 
 router.get('/getPatientData-contract', (req, res) => {
