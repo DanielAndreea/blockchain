@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 var indexRouter = require('./routes/index');
 var ethRouter = require('./routes/eth');
 var patientController = require('./routes/patient.controller');
+var doctorController = require('./routes/doctor.controller');
 
 //WEB 3
 var web3Lib = require('web3');
@@ -35,6 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/eth', ethRouter);
 app.use('/patient', patientController);
+app.use('/doctor', doctorController);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

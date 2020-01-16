@@ -10,8 +10,7 @@ exports.registerPatient = function (patient,callback) {
         password: patient.password,
         account: patient.account,
         accountPassword: patient.accountPassword
-    })
-
+    });
     patientDao.registerPatient(patientToInsert,callback);
 }
 

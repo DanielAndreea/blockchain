@@ -38,6 +38,5 @@ router.get('/getPatientData-contract', (req, res) => {
     const account = req.body.account;
     const password = req.body.password;
     PatientService.getPatientData(parsedABI, account, password);
-
 })
 module.exports = router;
