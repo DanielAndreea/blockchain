@@ -19,16 +19,7 @@ exports.deploy = function (abi, bin, account, password, callback) {
             })
             .then((instance) => {
                 console.log("CONTRACT DEPLOYED AT ADDRESS: ", instance.options.address);
-                // callback(instance.options.address)
-                // let contractToInsert = new ContractModel({
-                //     contractName: contractPatientType,
-                //     contractAddress: instance.options.address,
-                //     contractOwner: patient[0].account
-                // })
-                // patientDao.saveContract(contractToInsert);
-                // console.log(instance);
                 callback(instance.options.address);
-                // return instance.options.address;
             })
             .catch(console.log);
     })

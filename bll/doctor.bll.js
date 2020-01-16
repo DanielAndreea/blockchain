@@ -2,6 +2,8 @@ var doctorDao = require('../dao/doctor.dao');
 var UserModel = require('../models/user.model');
 var ContractModel = require('../models/contract.model');
 var deployService = require('../utils/deploy');
+var loadService = require('../utils/loadContract');
+var ethDoctorDao = require('../eth-dao/eth.doctor.dao');
 
 const contractDoctorType = 'DOCTOR_CONTRACT';
 exports.registerDoctor = function (doctor, callback) {
@@ -12,7 +14,7 @@ exports.registerDoctor = function (doctor, callback) {
         accountPassword: doctor.accountPassword
     });
     doctorDao.registerDoctor(doctorToInsert, callback);
-}
+};
 
 exports.deployDoctorContract = function (username, abi, bin) {
     doctorDao.getDoctorByUsername(username, (doctor) => {
@@ -21,41 +23,37 @@ exports.deployDoctorContract = function (username, abi, bin) {
                 contractName: contractDoctorType,
                 contractAddress: address,
                 contractOwner: doctor[0].account
-            })
+            });
             doctorDao.saveContract(contractToInsert);
-        })
-    })
-}
-// (string memory _firstName, string memory _lastName, uint256 _age, uint _specialization)
+        });
+    });
+};
+
 exports.registerUpdateContract = function (abi, username, doc) {
     doctorDao.getDoctorByUsername(username, (doctor) => {
         console.log(doctor);
         doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
-            var contract = new web3.eth.Contract(abi, contractAddress);
-            web3.eth.personal.unlockAccount(doctor[0].account, doctor[0].accountPassword, null, (err) => {
-                if (err) console.log(err);
-                web3.eth.sendTransaction({
-                    to: contractAddress,
-                    from: doctor[0].account,
-                    data: contract.methods.register(doc.firstName, doc.lastName, doc.age, doc.specialization).encodeABI()
-                })
-                    .then((data) => console.log(data))
-                    .catch(console.log);
-            })
-        })
-    })
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                ethDoctorDao.registerDoctorInContract(doctor[0].account, doctor[0].accountPassword, contractAddress, contract, doc, (data)=>{
+                    console.log(data ,' from bll');
+                    //TODO: CALLBACK -> TO USE RES.SEND IN CONTROLLER ???
+                });
+            });
+        });
+    });
 }
 
-exports.getDoctorData = function (abi, account, password) {
-    doctorDao.getContractAddressByAccount(account, (contractAddress) => {
-        console.log("Contract address: ", contractAddress);
-        var contract = new web3.eth.Contract(abi, contractAddress);
-        web3.eth.personal.unlockAccount(account, password, null, (err) => {
-            if (err) console.log(err);
-            contract.methods.owner().call(console.log);
-            contract.methods.firstName().call(console.log);
-            contract.methods.age().call(console.log);
-            contract.methods.specialization().call(console.log);
+exports.getDoctorData = function (abi, username,callback) {
+    doctorDao.getDoctorByUsername(username, (doctor) => {
+        console.log(doctor);
+        doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
+            console.log("Contract address: ", contractAddress);
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                ethDoctorDao.getDoctorDataFromContract(doctor[0].account, doctor[0].accountPassword,contract, (doc)=>{
+                    console.log("From blockchain: ", doc);
+                    callback(doc);
+                })
+            });
         })
-    })
+    });
 }
