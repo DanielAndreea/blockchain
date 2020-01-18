@@ -57,3 +57,9 @@ exports.getDoctorData = function (abi, username,callback) {
         })
     });
 }
+
+exports.consultPatient = function(patientUsername, doctorUsername, contract){
+    doctorDao.getDoctorByUsername(doctorUsername, (doctor) =>{
+
+    })
+}

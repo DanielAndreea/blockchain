@@ -31,12 +31,14 @@ router.get('/getMongoIdentifier', (req, res) => {
 
 router.post('/register-contract', (req, res) => {
     const username = req.body.username;
-    PatientService.registerUpdateContract(parsedABI, username);
+    const data = PatientService.registerUpdateContract(parsedABI, username);
+    res.send(data);
 })
 
 router.get('/getPatientData-contract', (req, res) => {
-    const account = req.body.account;
-    const password = req.body.password;
-    PatientService.getPatientData(parsedABI, account, password);
+    const username = req.body.username;
+    PatientService.getPatientData(parsedABI,username, (data) =>{
+        res.send(data);
+    });
 })
 module.exports = router;

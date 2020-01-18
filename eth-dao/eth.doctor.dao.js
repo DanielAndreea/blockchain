@@ -31,3 +31,4 @@ exports.getDoctorDataFromContract = function (account, password, contract, callb
         });
     });
 };
+
