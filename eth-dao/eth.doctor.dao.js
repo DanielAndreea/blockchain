@@ -32,3 +32,38 @@ exports.getDoctorDataFromContract = function (account, password, contract, callb
     });
 };
 
+//TODO
+//usermodel: patient by name => account address
+//contractmodels: contract address by contract owner (account address)
+exports.consultPatient = function (account,
+                                   password,
+                                   contractAddress,
+                                   contract,
+                                   patientAccountAddress,
+                                   patientContractAddress, callback){
+    console.log('Account ', account);
+    console.log('Password: ', password);
+
+    web3.eth.personal.unlockAccount(account,password, null, (err)=>{
+        if(err) console.log(err);
+        else console.log('all good until here');
+        console.log('address type: ', patientContractAddress);
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.consultPatient(patientAccountAddress,patientContractAddress).encodeABI(),
+            gasPrice: 100
+
+        })
+            .then((data) => {
+                console.log(data);
+                callback(data);
+                // return data;
+            })
+            .catch((err) => {
+                console.log(err);
+                // return err;
+            });
+    })
+}
+

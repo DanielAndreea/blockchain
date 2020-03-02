@@ -20,7 +20,7 @@ router.post('/deploy', (req, res) => {
 
 router.post('/register', (req, res) => {
     const patient = req.body.patient;
-    PatientService.registerPatient(patient,() =>{
+    PatientService.registerPatient(patient, () => {
         res.send(patient);
     });
 })
@@ -37,8 +37,17 @@ router.post('/register-contract', (req, res) => {
 
 router.get('/getPatientData-contract', (req, res) => {
     const username = req.body.username;
-    PatientService.getPatientData(parsedABI,username, (data) =>{
+    const organ = req.body.organ;
+    PatientService.getPatientData(parsedABI, username, organ, (data) => {
         res.send(data);
     });
+})
+
+router.post('/addOrganToMap', (req, res) => {
+    const username = req.body.username;
+    const organ = req.body.organ;
+    PatientService.addOrganToPatientMap(parsedABI, username, organ, (data) => {
+        res.send(data);
+    })
 })
 module.exports = router;

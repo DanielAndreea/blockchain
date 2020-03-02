@@ -11,7 +11,7 @@ exports.deploy = function (abi, bin, account, password, callback) {
         })
             .send({
                 from: account,
-                gas: 1000000,
+                gas: 5000000,
                 gasPrice: 100 //OBLIGATORIU
             })
             .on("receipt", (receipt) => {
