@@ -1,4 +1,4 @@
-exports.registerPatientInContract = function (account, password, contractAddress, contract, id) {
+exports.registerPatientInContract = function (account, password, contractAddress, contract, id, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
         web3.eth.sendTransaction({
@@ -8,11 +8,11 @@ exports.registerPatientInContract = function (account, password, contractAddress
         })
             .then((data) => {
                 console.log('REGISTERED IN CONTRACT ', data);
-                return data;
+                callback(data);
             })
             .catch((err) => {
                 console.log(err);
-                return err;
+                callback(err);
             });
     });
 };
@@ -42,14 +42,23 @@ exports.getPatientDataFromContract = function (account, password, contract, orga
 
 //TODO: get organ contract's address by organ name!!!! => then use it
 //TODO: in compute score -> load organ contract by address, call method to compute score
+exports.getOrganAddressByName = function (account, password, contract, organ, callback) {
+    console.log('DAO ACCOUNT: ', account)
+    console.log('DAO PASSWORD: ', password)
+    console.log('ORGAN: ', organ)
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) console.log(err);
+        contract.methods.getOrganByName(organ).call(null, (err, org) => {
+            if(err) console.log(err)
+                console.log('RETURNED ', org)
+                // return org;
+                callback(org);
+            }
+        )
+    })
+}
 
 exports.addDoctorToPatientMap = function (account, password, doctorContractAddress, status, contractAddress, contract, callback) {
-    console.log('--------------ACCOUNT-------------');
-    console.log(account);
-    console.log('----------------PASSWORD-----------');
-    console.log(password);
-    console.log('---------------DOCTOR CONTRACT ADDRESS-----------');
-    console.log(doctorContractAddress);
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
         web3.eth.sendTransaction({
@@ -59,7 +68,7 @@ exports.addDoctorToPatientMap = function (account, password, doctorContractAddre
             gasPrice: 100
         })
             .then((data) => {
-                console.log(data);
+                console.log('DATA RETURNED: ', data);
                 callback(data);
             })
             .catch((err) => {
@@ -70,18 +79,12 @@ exports.addDoctorToPatientMap = function (account, password, doctorContractAddre
 }
 
 exports.addOrganToMap = function (account, password, organ, contractAddress, contract, callback) {
-    console.log('--------------ACCOUNT-------------');
-    console.log(account);
-    console.log('----------------PASSWORD-----------');
-    console.log(password);
-    console.log('---------------ORGAN-----------');
-    console.log(organ);
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.addOrganToMap(organ).encodeABI(),
+            data: contract.methods.addOrganToMap(organ.toString()).encodeABI(),
             gasPrice: 100
         })
             .then((data) => {
@@ -93,4 +96,5 @@ exports.addOrganToMap = function (account, password, organ, contractAddress, con
                 callback(null, err);
             })
     })
-}
+};
+

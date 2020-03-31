@@ -14,35 +14,39 @@ exports.registerPatient = function (patient, callback) {
         accountPassword: patient.accountPassword
     });
     patientDao.registerPatient(patientToInsert, callback);
-}
+};
 
 
-exports.deployPatientContract = function (username, abi, bin) {
+exports.deployPatientContract = function (username, abi, bin, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         deployService.deploy(abi, bin, patient[0].account, patient[0].accountPassword, (address) => {
             let contractToInsert = new ContractModel({
                 contractName: contractPatientType,
                 contractAddress: address,
                 contractOwner: patient[0].account
-            })
-            patientDao.saveContract(contractToInsert);
+            });
+            patientDao.saveContract(contractToInsert, callback);
         })
     })
-}
+};
 
 
-exports.registerUpdateContract = function (abi, username) {
+exports.registerUpdateContract = function (abi, username, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         console.log(patient);
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
-                console.log('BEFORE ENTERING IN ETH PATIENT DAO')
-                const data = ethPatientDao.registerPatientInContract(patient[0].account, patient[0].accountPassword, contractAddress, contract, "newId");
-                return data;
+                console.log('BEFORE ENTERING IN ETH PATIENT DAO');
+                ethPatientDao.registerPatientInContract(patient[0].account,
+                    patient[0].accountPassword,
+                    contractAddress,
+                    contract,
+                    "newId",
+                    callback);
             });
         });
     });
-}
+};
 
 
 exports.getPatientData = function (abi, username, organ, callback) {
@@ -73,14 +77,14 @@ exports.addDoctorToPatientMap = function (abi, username, doctorContractAddress, 
                     contractAddress,
                     contract, (response) => {
                         if (response) {
-                            console.log('FROM PATIENT bll: ', response)
+                            console.log('FROM PATIENT bll: ', response);
                             callback(response);
                         }
                     });
             })
         })
     })
-}
+};
 
 exports.addOrganToPatientMap = function (abi, username, organ, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
@@ -100,4 +104,21 @@ exports.addOrganToPatientMap = function (abi, username, organ, callback) {
             })
         }
     )
+};
+
+exports.getOrganAddressByName = function (abi, username, organ, callback) {
+    patientDao.getPatientByUsername(username, (patient) => {
+        patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                ethPatientDao.getOrganAddressByName(patient[0].account,
+                    patient[0].accountPassword,
+                    contract,
+                    organ,
+                    (res) => {
+                        console.log(res);
+                        callback(res);
+                    })
+            })
+        })
+    })
 }

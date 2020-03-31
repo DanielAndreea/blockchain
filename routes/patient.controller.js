@@ -16,24 +16,26 @@ router.post('/deploy', (req, res) => {
         console.log(data);
         res.send(data);
     });
-})
+});
 
 router.post('/register', (req, res) => {
     const patient = req.body.patient;
-    PatientService.registerPatient(patient, () => {
+    PatientService.registerPatient(patient, (patient) => {
         res.send(patient);
     });
-})
+});
 
 router.get('/getMongoIdentifier', (req, res) => {
     PatientService.getPatientIdentifier(req.body.account);
-})
+});
 
 router.post('/register-contract', (req, res) => {
     const username = req.body.username;
-    const data = PatientService.registerUpdateContract(parsedABI, username);
-    res.send(data);
-})
+    PatientService.registerUpdateContract(parsedABI, username, (data) => {
+        res.send(data);
+    });
+
+});
 
 router.get('/getPatientData-contract', (req, res) => {
     const username = req.body.username;
@@ -41,12 +43,22 @@ router.get('/getPatientData-contract', (req, res) => {
     PatientService.getPatientData(parsedABI, username, organ, (data) => {
         res.send(data);
     });
-})
+});
 
 router.post('/addOrganToMap', (req, res) => {
     const username = req.body.username;
     const organ = req.body.organ;
     PatientService.addOrganToPatientMap(parsedABI, username, organ, (data) => {
+        res.send(data);
+    })
+});
+
+router.get('/getOrganByName', (req, res) => {
+    const organ = req.body.organ;
+    const username = req.body.username;
+    console.log(organ)
+    console.log(username)
+    PatientService.getOrganAddressByName(parsedABI, username, organ, (data) => {
         res.send(data);
     })
 })

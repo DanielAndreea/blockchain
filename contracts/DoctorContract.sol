@@ -26,5 +26,9 @@ contract DoctorContract{
     function consultPatient(address  _patientAccountAddress, address  _patientContractAddress) public{
         consultedPatients[_patientAccountAddress] = _patientContractAddress;
     }
-    
+
+    function getConsultedPatient(address _patientAccountAddress) view public returns(address){
+        return consultedPatients[_patientAccountAddress];
+    }
+
 }

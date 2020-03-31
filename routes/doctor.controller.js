@@ -50,4 +50,12 @@ router.post('/consult-patient', (req, res) => {
     const patientUsername = req.body.patientUsername;
     DoctorService.consultPatient(parsedABI, patientParsedABI, patientUsername, doctorUsername);
 });
+
+router.get('/getConsultedPatient', (req, res)=>{
+    const doctorUsername = req.body.doctorUsername;
+    const patientUsername = req.body.patientUsername;
+    DoctorService.getConsultedPatient(parsedABI,doctorUsername,patientUsername, (result)=>{
+        res.send(result);
+    })
+})
 module.exports = router;

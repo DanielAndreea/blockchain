@@ -1,1 +1,8 @@
-export const LIVER = 'Liver';
+module.exports.ORGAN = {
+    LIVER: 'LIVER'
+};
+
+module.exports.CONTRACT_TYPE = {
+    DOCTOR_CONTRACT: 'DOCTOR_CONTRACT',
+    PATIENT_CONTRACT: 'PATIENT_CONTRACT'
+};

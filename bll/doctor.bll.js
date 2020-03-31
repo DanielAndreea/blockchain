@@ -97,3 +97,25 @@ exports.consultPatient = function (docAbi, patientAbi, patientUsername, doctorUs
         })
     })
 }
+exports.getConsultedPatient = function (abi, username, patientUsername, callback) {
+    doctorDao.getDoctorByUsername(username, (doctor) => {
+        console.log('PATIENT: ', doctor);
+        doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
+            console.log('CONTRACT ADDRESS: ', contractAddress)
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                patientDao.getPatientByUsername(patientUsername, (patient) => {
+                    ethDoctorDao.getConsultedPatient(doctor[0].account,
+                        doctor[0].accountPassword,
+                        contract,
+                        contractAddress,
+                        patient[0].account,
+                        (res) => {
+                            console.log(res);
+                            callback(res);
+                        })
+                })
+
+            })
+        })
+    })
+}

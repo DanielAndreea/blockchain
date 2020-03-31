@@ -1,0 +1,24 @@
+//TODO: 1. Unique username register
+//TODO: 2. Login
+//TODO: 3. Create new account for each register and transfer ether from a superuser account ?
+//TODO: 4. Hash(CNP,username) for UNIQUE ID
+//TODO: 5. SORT RECEIVERS LIST
+//TODO: 6. Validate account format
+//TODO: 7. Check that account doesn't exists in db
+//TODO: 8. Display only doctor's patients
+//TODO: 9. Doctor contract: store an array with all map keys and a variable ~ lenght of the array
+//todo: when doctor logs in app get all doctor patients from map using the array (for up to variable get from map(array_value)
+******************IPFS******************
+
+- doctor mark patient as receiver
+1. doctor register
+2. patient register
+3. doctor adds patient to his map (consult patient)
+4. patient adds doctor do his map (doctor has access to patient's methods)
+5. doctor choose patient from table -> go to patient details
+6. go to 'mark as receiver'
+7. choose organ
+8. compute score
+
+
+- update patient's score for organ

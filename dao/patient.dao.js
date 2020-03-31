@@ -1,7 +1,7 @@
 var UserModel = require('../models/user.model');
 var ContractModel = require('../models/contract.model');
 
-exports.registerPatient = function (patientToInsert,callback) {
+exports.registerPatient = function (patientToInsert, callback) {
     patientToInsert.save()
         .then(data => {
             console.log('SAVED PATIENT TO DB: ', data);
@@ -11,10 +11,11 @@ exports.registerPatient = function (patientToInsert,callback) {
         .catch(error => console.log('FROM PATIENT DAO ', error));
 }
 
-exports.saveContract = function (contractToInsert) {
+exports.saveContract = function (contractToInsert, callback) {
     contractToInsert.save()
         .then(data => {
             console.log('SAVED CONTRACT TO DB: ', data);
+            callback(data);
         })
         .catch(error => console.log('FROM PATIENT DAO ', error));
 }
@@ -28,10 +29,10 @@ exports.getPatientIdentifier = function (username, callback) {
         .catch(console.log);
 }
 
-exports.getPatientByUsername = function(username, callback){
+exports.getPatientByUsername = function (username, callback) {
     UserModel.find({username: username})
-        .then( (data) =>{
-            console.log('data ',data);
+        .then((data) => {
+            console.log('data ', data);
             callback(data);
         })
         .catch(console.log);
@@ -45,3 +46,4 @@ exports.getContractAddressByAccount = function (account, callback) {
         })
         .catch(console.log);
 }
+

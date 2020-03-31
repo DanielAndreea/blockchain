@@ -52,8 +52,8 @@ exports.consultPatient = function (account,
             to: contractAddress,
             from: account,
             data: contract.methods.consultPatient(patientAccountAddress,patientContractAddress).encodeABI(),
-            gasPrice: 100
-
+            gasPrice: 100,
+            gas: 5000000
         })
             .then((data) => {
                 console.log(data);
@@ -64,6 +64,24 @@ exports.consultPatient = function (account,
                 console.log(err);
                 // return err;
             });
+    })
+};
+
+
+exports.getConsultedPatient = function (account, password, contract, contractAddress, patientAccountAddress, callback) {
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) console.log(err);
+        console.log('account unlocked');
+        contract.methods.getConsultedPatient(patientAccountAddress).call(
+            {
+                from: account
+            }, (err, contractAddress) => {
+                if(err) console.log(err)
+                console.log(patientAccountAddress)
+                console.log('RETURNED ', contractAddress)
+                callback(contractAddress);
+            }
+        )
     })
 }
 
