@@ -1,18 +1,40 @@
 var userDao = require('../dao/user.dao');
 var contractService = require('./contract.bll');
 var constants = require('../utils/constants');
-
-var ursa = require('ursa');
-
+var crypto = require('crypto');
+// var ursa = require('ursa');
+var fs = require('fs');
 
 exports.getAllUsers = function (callback) {
     userDao.getAllUsers((result) => callback(result));
-    var key = ursa.generatePrivateKey(1024, 65537);
-    var privkeypem = key.toPrivatePem();
-    var pubkeypem = key.toPublicPem();
-
-    console.log(privkeypem.toString('ascii'));
-    console.log(pubkeypem.toString('ascii'));
+    // crypto.generateKeyPair('rsa', {
+    //     modulusLength: 4096,
+    //     publicKeyEncoding: {
+    //         type: 'spki',
+    //         format: 'pem'
+    //     },
+    //     privateKeyEncoding: {
+    //         type: 'pkcs8',
+    //         format: 'pem',
+    //         cipher: 'aes-256-cbc',
+    //         passphrase: 'top secret'
+    //     }
+    // }, (err, publicKey, privateKey) => {
+    //     // Handle errors and use the generated key pair.
+    //     console.log("SECOND PUBLIC KEY: ", publicKey);
+    //     console.log("SECOND PRIVATE KEY: ", privateKey);
+    //
+    //     fs.writeFile('public.pem', publicKey, null, (error) => {
+    //         if (error) console.log(error);
+    //         else console.log('saved in public.txt');
+    //     });
+    //
+    //     fs.writeFile('private.pem', privateKey, null, (error) => {
+    //         if (error) console.log(error);
+    //         else console.log('saved in private.txt');
+    //     });
+    //
+    // });
 };
 
 exports.getPatientUsers = function (callback) {
