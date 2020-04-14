@@ -30,13 +30,14 @@ exports.generateKeys = function () {
 };
 
 exports.encryptFile = function (file, callback) {
-    const fileForEncrypt = new Uint8Array(file.length);
-    //console.log(file);
-    // console.log(fileForEncrypt)
-    for (var i = 0; i < Object.keys(file).length; i++) {
-        fileForEncrypt[i] = file.charCodeAt(i);
-    }
-    fs.writeFile('original.txt', fileForEncrypt, null, (error) => {
+    // const fileForEncrypt = new Uint8Array(file.length);
+    // //console.log(file);
+    // // console.log(fileForEncrypt)
+    // for (var i = 0; i < Object.keys(file).length; i++) {
+    //     fileForEncrypt[i] = file.charCodeAt(i);
+    // }
+    var fileForEncrypt = new Buffer(file, 'binary');
+    fs.writeFile('original.txt', fileForEncrypt, 'binary', (error) => {
         if (error) console.log(error);
         else console.log('saved in original.txt');
     });
@@ -97,12 +98,8 @@ exports.decryptFile = function (file, callback) {
 
         const decrypted = await openpgp.decrypt(options);
         console.log(decrypted)
-        var myFile = new Buffer(decrypted.data.length);
-        for (var i = 0; i < Object.keys(decrypted.data).length; i++) {
-            myFile[i] = String.fromCharCode(decrypted.data[i]);
-        }
 
-        fs.writeFile('decrypted-final.txt', myFile, null, (error) => {
+        fs.writeFile('decrypted-final.txt', decrypted.data, null, (error) => {
             if (error) console.log(error);
             else console.log('saved in decrypted.txt');
         });
@@ -112,9 +109,9 @@ exports.decryptFile = function (file, callback) {
                 console.log("trist");
                 return;
             }
-            const bufferData = Buffer.from(myFile, 'binary');
+            const bufferData = Buffer.from(decrypted.data, 'binary');
             console.log("BUF LENGTH: " + bufferData.length);
-            fs.writeFile(fd, decrypted, {encoding: 'binary'}, (error) => {
+            fs.writeFile(fd, decrypted.data, {encoding: 'binary'}, (error) => {
                 if (error) console.log(error);
                 else console.log('saved');
             });
