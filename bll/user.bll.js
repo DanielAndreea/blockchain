@@ -1,40 +1,28 @@
 var userDao = require('../dao/user.dao');
 var contractService = require('./contract.bll');
 var constants = require('../utils/constants');
-var crypto = require('crypto');
-// var ursa = require('ursa');
-var fs = require('fs');
+var UserModel = require('../models/user.model');
 
+
+exports.login = function (username, password, callback) {
+    console.log(username)
+    console.log(password)
+    try {
+        UserModel.findOne({username: username}, (data) => console.log(data))
+            .then((user) => {
+                if(user) {
+                    if(user.password === password) callback(user);
+                    else callback('Wrong credentials');
+                }
+                else callback('Wrong credentials');
+            })
+            .catch((error) => console.log(error))
+    } catch (error) {
+        callback(error);
+    }
+};
 exports.getAllUsers = function (callback) {
     userDao.getAllUsers((result) => callback(result));
-    // crypto.generateKeyPair('rsa', {
-    //     modulusLength: 4096,
-    //     publicKeyEncoding: {
-    //         type: 'spki',
-    //         format: 'pem'
-    //     },
-    //     privateKeyEncoding: {
-    //         type: 'pkcs8',
-    //         format: 'pem',
-    //         cipher: 'aes-256-cbc',
-    //         passphrase: 'top secret'
-    //     }
-    // }, (err, publicKey, privateKey) => {
-    //     // Handle errors and use the generated key pair.
-    //     console.log("SECOND PUBLIC KEY: ", publicKey);
-    //     console.log("SECOND PRIVATE KEY: ", privateKey);
-    //
-    //     fs.writeFile('public.pem', publicKey, null, (error) => {
-    //         if (error) console.log(error);
-    //         else console.log('saved in public.txt');
-    //     });
-    //
-    //     fs.writeFile('private.pem', privateKey, null, (error) => {
-    //         if (error) console.log(error);
-    //         else console.log('saved in private.txt');
-    //     });
-    //
-    // });
 };
 
 exports.getPatientUsers = function (callback) {

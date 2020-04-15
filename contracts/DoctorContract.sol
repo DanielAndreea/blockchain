@@ -14,6 +14,10 @@ contract DoctorContract{
     
     //map with consulted patients
     mapping(address => address) public consultedPatients;
+    address[] patientsArray;
+    uint numberOfPatients = 0; 
+    
+    event consultedPatient(address accountAddress);
     
     function register(string memory _firstName, string memory _lastName, uint256 _age, uint _specialization) public {
         owner = msg.sender;
@@ -25,9 +29,12 @@ contract DoctorContract{
 
     function consultPatient(address  _patientAccountAddress, address  _patientContractAddress) public{
         consultedPatients[_patientAccountAddress] = _patientContractAddress;
+        patientsArray.push(_patientContractAddress);
+        numberOfPatients++;
     }
-
-    function getConsultedPatient(address _patientAccountAddress) view public returns(address){
+    
+    function getConsultedPatient(address _patientAccountAddress) view public returns(address contractAddress){
+        //emit consultedPatient(consultedPatients[_patientAccountAddress]);
         return consultedPatients[_patientAccountAddress];
     }
 
