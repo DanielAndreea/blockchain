@@ -5,10 +5,8 @@ var UserModel = require('../models/user.model');
 
 
 exports.login = function (username, password, callback) {
-    console.log(username)
-    console.log(password)
     try {
-        UserModel.findOne({username: username}, (data) => console.log(data))
+        UserModel.findOne({username: username})
             .then((user) => {
                 if(user) {
                     if(user.password === password) callback(user);

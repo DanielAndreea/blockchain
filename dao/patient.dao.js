@@ -38,6 +38,14 @@ exports.getPatientByUsername = function (username, callback) {
         .catch(console.log);
 }
 
+exports.getPatientByAccount = function (account, callback){
+    UserModel.find({account: account})
+        .then((data) => {
+            callback(data);
+        })
+        .catch(console.log);
+}
+
 exports.getContractAddressByAccount = function (account, callback) {
     ContractModel.find({contractOwner: account})
         .then((contract) => {

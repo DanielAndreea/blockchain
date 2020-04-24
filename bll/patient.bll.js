@@ -6,6 +6,7 @@ var ethPatientDao = require('../eth-dao/eth.patient.dao');
 var loadService = require('../utils/loadContract');
 
 const contractPatientType = 'PATIENT_CONTRACT';
+
 exports.registerPatient = function (patient, callback) {
     let patientToInsert = new UserModel({
         username: patient.username,
@@ -117,6 +118,47 @@ exports.getOrganAddressByName = function (abi, username, organ, callback) {
                     (res) => {
                         console.log(res);
                         callback(res);
+                    })
+            })
+        })
+    })
+};
+
+exports.getPatientByAccount = function (account) {
+    return new Promise(resolve => patientDao.getPatientByAccount(account, (p) =>
+        resolve(p))
+    );
+};
+
+exports.addFileHash = function (abi, username, hash, name, callback) {
+    patientDao.getPatientByUsername(username, (patient) => {
+        patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                ethPatientDao.addFileHash(patient[0].account,
+                    patient[0].accountPassword,
+                    hash,
+                    name,
+                    contractAddress,
+                    contract,
+                    (response) => {
+                        console.log(response);
+                        callback(response)
+                    })
+            })
+        })
+    })
+};
+
+exports.getDocuments = function(abi,username,callback){
+    patientDao.getPatientByUsername(username, (patient) => {
+        patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                ethPatientDao.getDocuments(patient[0].account,
+                    patient[0].accountPassword,
+                    contract,
+                    (response) => {
+                        console.log(response);
+                        callback(response)
                     })
             })
         })

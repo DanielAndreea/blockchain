@@ -61,5 +61,24 @@ router.get('/getOrganByName', (req, res) => {
     PatientService.getOrganAddressByName(parsedABI, username, organ, (data) => {
         res.send(data);
     })
-})
+});
+
+router.post('/addHash', (req, res) => {
+    const hash = req.body.hash;
+    const name = req.body.name;
+    const username = req.body.username;
+    console.log(hash)
+    PatientService.addFileHash(parsedABI, username, hash, name, (data) => {
+        res.send(data);
+    })
+});
+
+router.get('/getDocuments/:username', (req, res) => {
+    const username = req.params.username;
+    console.log(username)
+    PatientService.getDocuments(parsedABI, username, (data) => {
+        console.log(data)
+        res.send(data)
+    })
+});
 module.exports = router;

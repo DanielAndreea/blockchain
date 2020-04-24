@@ -43,20 +43,17 @@ exports.getPatientDataFromContract = function (account, password, contract, orga
 //TODO: get organ contract's address by organ name!!!! => then use it
 //TODO: in compute score -> load organ contract by address, call method to compute score
 exports.getOrganAddressByName = function (account, password, contract, organ, callback) {
-    console.log('DAO ACCOUNT: ', account)
-    console.log('DAO PASSWORD: ', password)
-    console.log('ORGAN: ', organ)
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
         contract.methods.getOrganByName(organ).call(null, (err, org) => {
-            if(err) console.log(err)
-                console.log('RETURNED ', org)
+                if (err) console.log(err);
+                console.log('RETURNED ', org);
                 // return org;
                 callback(org);
             }
         )
     })
-}
+};
 
 exports.addDoctorToPatientMap = function (account, password, doctorContractAddress, status, contractAddress, contract, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
@@ -76,7 +73,7 @@ exports.addDoctorToPatientMap = function (account, password, doctorContractAddre
                 callback(data)
             });
     })
-}
+};
 
 exports.addOrganToMap = function (account, password, organ, contractAddress, contract, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
@@ -98,3 +95,33 @@ exports.addOrganToMap = function (account, password, organ, contractAddress, con
     })
 };
 
+exports.addFileHash = function (account, password, hash, name, contractAddress, contract, callback) {
+    console.log('CONTRACT ADDRESS ', contractAddress)
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) console.log(err);
+        console.log(contract.methods)
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.addNewDocument(hash.toString(), name).encodeABI(),
+            gasPrice: 5000
+        })
+            .then((data) => {
+                callback(data);
+            })
+            .catch((err) => {
+                callback(err);
+            })
+    })
+};
+
+exports.getDocuments = function (account, password, contract, callback) {
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) console.log(err);
+        contract.methods.numberOfIpfs().call(null, (err, number) => {
+            if (err) console.log(err);
+            console.log(number);
+            callback(number);
+        })
+    })
+}

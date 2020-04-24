@@ -14,8 +14,8 @@ contract DoctorContract{
     
     //map with consulted patients
     mapping(address => address) public consultedPatients;
-    address[] patientsArray;
-    uint numberOfPatients = 0; 
+    address[] public patientsArray;
+    uint public numberOfPatients = 0;
     
     event consultedPatient(address accountAddress);
     
@@ -29,7 +29,7 @@ contract DoctorContract{
 
     function consultPatient(address  _patientAccountAddress, address  _patientContractAddress) public{
         consultedPatients[_patientAccountAddress] = _patientContractAddress;
-        patientsArray.push(_patientContractAddress);
+        patientsArray.push(_patientAccountAddress);
         numberOfPatients++;
     }
     

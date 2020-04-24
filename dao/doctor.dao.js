@@ -10,10 +10,11 @@ exports.registerDoctor = function (doctorToInsert,callback) {
         .catch(error => console.log('FROM DOCTOR DAO ', error));
 }
 
-exports.saveContract = function (contractToInsert) {
+exports.saveContract = function (contractToInsert, callback) {
     contractToInsert.save()
         .then(data => {
             console.log('SAVED CONTRACT TO DB: ', data);
+            callback(data)
         })
         .catch(error => console.log('FROM DOCTOR DAO ', error));
 }

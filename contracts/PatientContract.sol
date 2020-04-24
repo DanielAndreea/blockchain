@@ -9,15 +9,15 @@ contract PatientContract{
     
     string public identifier;
     address public owner;
-    
+    bool public donor;
      //map with doctors
     mapping(address => bool) public doctors;
     mapping(string => address) public organs;
     
     //mapping with IPFShash -> document name
     mapping(string => string) public documents;
-    string[] ipfs;
-    uint numberOfIpfs;
+    string[] public ipfs;
+    uint public numberOfIpfs;
     
     //constants
     string liver = "LIVER";
@@ -58,5 +58,10 @@ contract PatientContract{
         documents[_ipfsHash] = _documentName;
         ipfs.push(_ipfsHash);
         numberOfIpfs++;
+    }
+
+
+    function markPatientAsDonor() public {
+        donor = true;
     }
 }

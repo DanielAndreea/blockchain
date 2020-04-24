@@ -6,7 +6,6 @@ router.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     userService.login(username, password, (response) => {
-        console.log(response);
         res.send(response);
     })
 });

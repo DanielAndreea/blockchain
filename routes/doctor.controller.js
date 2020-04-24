@@ -48,14 +48,24 @@ router.get('/getDoctorData-contract', (req, res) => {
 router.post('/consult-patient', (req, res) => {
     const doctorUsername = req.body.doctorUsername;
     const patientUsername = req.body.patientUsername;
-    DoctorService.consultPatient(parsedABI, patientParsedABI, patientUsername, doctorUsername);
+    DoctorService.consultPatient(parsedABI, patientParsedABI, patientUsername, doctorUsername, (data) => {
+        res.send(data)
+    });
 });
 
-router.get('/getConsultedPatient', (req, res)=>{
+router.get('/getConsultedPatient', (req, res) => {
     const doctorUsername = req.body.doctorUsername;
     const patientUsername = req.body.patientUsername;
-    DoctorService.getConsultedPatient(parsedABI,doctorUsername,patientUsername, (result)=>{
+    DoctorService.getConsultedPatient(parsedABI, doctorUsername, patientUsername, (result) => {
         res.send(result);
+    })
+})
+
+router.post('/getDoctorPatients', (req, res) => {
+    const doctorUsername = req.body.username;
+    console.log(doctorUsername)
+    DoctorService.getAllConsultedPatients(parsedABI, doctorUsername, (result) => {
+        res.send(result)
     })
 })
 module.exports = router;
