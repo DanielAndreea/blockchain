@@ -55,6 +55,8 @@ exports.getOrganAddressByName = function (account, password, contract, organ, ca
     })
 };
 
+
+
 exports.addDoctorToPatientMap = function (account, password, doctorContractAddress, status, contractAddress, contract, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
@@ -116,12 +118,31 @@ exports.addFileHash = function (account, password, hash, name, contractAddress, 
 };
 
 exports.getDocuments = function (account, password, contract, callback) {
+    var documents = [];
+    var myMap = [];
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
-        contract.methods.numberOfIpfs().call(null, (err, number) => {
+        contract.methods.numberOfIpfs().call(null, async (err, number) => {
             if (err) console.log(err);
-            console.log(number);
-            callback(number);
+            for (let i = 0; i < number; i++) {
+                let document = await getDoc(contract, i);
+                let fileName = await getMapping(contract,document);
+                documents.push(document);
+                myMap.push({hash: document, name: fileName});
+            }
+            callback(myMap);
         })
     })
+};
+
+function getDoc(contract, number) {
+    return new Promise(resolve => contract.methods.ipfs(number).call(null, (err, doc) => {
+        resolve(doc);
+    }))
+}
+
+function getMapping(contract,hash) {
+    return new Promise(resolve => contract.methods.documents(hash).call(null, (err, doc) => {
+        resolve(doc);
+    }))
 }

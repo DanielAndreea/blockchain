@@ -4,17 +4,23 @@ var ContractModel = require('../models/contract.model');
 var deployService = require('../utils/deploy');
 var ethPatientDao = require('../eth-dao/eth.patient.dao');
 var loadService = require('../utils/loadContract');
-
+var encryptService = require('../bll/encrypt.bll');
 const contractPatientType = 'PATIENT_CONTRACT';
 
 exports.registerPatient = function (patient, callback) {
-    let patientToInsert = new UserModel({
-        username: patient.username,
-        password: patient.password,
-        account: patient.account,
-        accountPassword: patient.accountPassword
-    });
-    patientDao.registerPatient(patientToInsert, callback);
+    encryptService.generateKeys(patient.username, (publicKey) =>{
+        let patientToInsert = new UserModel({
+            username: patient.username,
+            password: patient.password,
+            role:patient.role,
+            account: patient.account,
+            accountPassword: patient.accountPassword,
+            publicKey: publicKey
+        });
+
+        patientDao.registerPatient(patientToInsert, callback);
+    })
+
 };
 
 
@@ -157,7 +163,6 @@ exports.getDocuments = function(abi,username,callback){
                     patient[0].accountPassword,
                     contract,
                     (response) => {
-                        console.log(response);
                         callback(response)
                     })
             })

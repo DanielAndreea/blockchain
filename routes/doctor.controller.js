@@ -35,7 +35,9 @@ router.post('/register', (req, res) => {
 router.post('/register-contract', (req, res) => {
     const username = req.body.username;
     const doc = req.body.doctor;
-    DoctorService.registerUpdateContract(parsedABI, username, doc);
+    DoctorService.registerUpdateContract(parsedABI, username, doc, (resp) =>{
+        res.send(resp)
+    });
 });
 
 router.get('/getDoctorData-contract', (req, res) => {

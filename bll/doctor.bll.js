@@ -6,17 +6,24 @@ var deployService = require('../utils/deploy');
 var loadService = require('../utils/loadContract');
 var ethDoctorDao = require('../eth-dao/eth.doctor.dao');
 var patientBll = require('../bll/patient.bll');
+var encryptService = require('../bll/encrypt.bll');
 
 const contractDoctorType = 'DOCTOR_CONTRACT';
 
 exports.registerDoctor = function (doctor, callback) {
-    let doctorToInsert = new UserModel({
-        username: doctor.username,
-        password: doctor.password,
-        account: doctor.account,
-        accountPassword: doctor.accountPassword
-    });
-    doctorDao.registerDoctor(doctorToInsert, callback);
+    console.log(doctor);
+    encryptService.generateKeys(doctor.username, (publicKey) => {
+
+        let doctorToInsert = new UserModel({
+            username: doctor.username,
+            password: doctor.password,
+            role: doctor.role,
+            account: doctor.account,
+            accountPassword: doctor.accountPassword,
+            publicKey: publicKey
+        });
+        doctorDao.registerDoctor(doctorToInsert, callback);
+    })
 };
 
 exports.deployDoctorContract = function (username, abi, bin, callback) {
@@ -34,15 +41,12 @@ exports.deployDoctorContract = function (username, abi, bin, callback) {
     });
 };
 
-exports.registerUpdateContract = function (abi, username, doc) {
+exports.registerUpdateContract = function (abi, username, doc, callback) {
     doctorDao.getDoctorByUsername(username, (doctor) => {
         console.log(doctor);
         doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
-                ethDoctorDao.registerDoctorInContract(doctor[0].account, doctor[0].accountPassword, contractAddress, contract, doc, (data) => {
-                    console.log(data, ' from bll');
-                    //TODO: CALLBACK -> TO USE RES.SEND IN CONTROLLER ???
-                });
+                ethDoctorDao.registerDoctorInContract(doctor[0].account, doctor[0].accountPassword, contractAddress, contract, doc, callback);
             });
         });
     });

@@ -1,4 +1,4 @@
-exports.registerDoctorInContract = function (account, password, contractAddress, contract, doc) {
+exports.registerDoctorInContract = function (account, password, contractAddress, contract, doc, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
         web3.eth.sendTransaction({
@@ -6,8 +6,15 @@ exports.registerDoctorInContract = function (account, password, contractAddress,
             from: account,
             data: contract.methods.register(doc.firstName, doc.lastName, doc.age, doc.specialization).encodeABI()
         })
-            .then((data) => console.log(data))
-            .catch((err) => console.log(err));
+            .then((data) => {
+                console.log('DONE')
+                callback(data);
+            })
+            .catch((err) => {
+                console.log(err);
+                callback(err);
+            });
+
     });
 };
 

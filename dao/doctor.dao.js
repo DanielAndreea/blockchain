@@ -36,3 +36,4 @@ exports.getContractAddressByAccount = function (account, callback) {
         })
         .catch(console.log);
 }
+
