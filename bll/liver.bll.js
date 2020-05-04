@@ -21,10 +21,10 @@ exports.computeScore = function (abi, username, organAddress, bilirubin, inr, cr
     })
 };
 
-exports.getScoreByDoctor = function(abi,username,callback){
+exports.getScoreByDoctor = function(abi,username,organContractAddress,callback){
     doctorDao.getDoctorByUsername(username, (doctor) => {
         doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
-            loadService.loadContract(abi, contractAddress, (contract) => {
+            loadService.loadContract(abi, organContractAddress, (contract) => {
                 ethLiverDao.getScoreForLiver(doctor[0].account,
                     doctor[0].accountPassword,
                     contract,

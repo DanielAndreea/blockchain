@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var DoctorService = require('../bll/doctor.bll');
+var PatientService = require('../bll/patient.bll');
+var LiverService = require('../bll/liver.bll');
+
 var fs = require('fs');
 var path = require('path')
 
@@ -15,6 +18,12 @@ var patientParsedABI = JSON.parse(fs.readFileSync(path.resolve(patientAbiJSON)))
 
 var patientBinJSON = '././contracts/compiled/PatientContract_sol_PatientContract.bin';
 var patientBIN = fs.readFileSync(path.resolve(patientBinJSON));
+
+var liverAbiJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.abi';
+var liverParsedABI = JSON.parse(fs.readFileSync(path.resolve(liverAbiJSON)));
+
+var liverBinJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.bin';
+var liverBIN = fs.readFileSync(path.resolve(liverBinJSON));
 
 router.post('/deploy', (req, res) => {
     const username = req.body.username;
@@ -70,4 +79,16 @@ router.post('/getDoctorPatients', (req, res) => {
         res.send(result)
     })
 })
+
+router.get('/getScore/:organ/:patientUsername/:doctorUsername', (req, res) => {
+    const organ = req.params.organ;
+    const patientUsername = req.params.patientUsername;
+    const doctorUsername = req.params.doctorUsername;
+    PatientService.getOrganAddressByName(patientParsedABI, patientUsername, organ, (organAddress) => {
+        LiverService.getScoreByDoctor(liverParsedABI,doctorUsername, organAddress, (score) => {
+            console.log(score);
+            res.send(score)
+        })
+    })
+});
 module.exports = router;
