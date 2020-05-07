@@ -1,6 +1,7 @@
 exports.computeMeldScore = function(account,password,contractAddress,contract,bilirubin,inr,creatinine,dialysis,callback){
     web3.eth.personal.unlockAccount(account,password,null,(err) =>{
         if(err) callback(err);
+        console.log('----------ACCOUNT UNLOCKED------------------')
         web3.eth.sendTransaction(
             {
                 to: contractAddress,
@@ -19,11 +20,15 @@ exports.computeMeldScore = function(account,password,contractAddress,contract,bi
 
 
 exports.getScoreForLiver = function(account,password,contract,callback){
+    console.log(account);
+    console.log(password);
     web3.eth.personal.unlockAccount(account,password,null,(err)=>{
         if(err) callback(err);
         contract.methods.receiveScore().call(null, (err, score)=>{
-            if(err) callback(err)
-            callback(score)
+            console.log('--------------------------GOOD')
+            if(err) callback(err);
+            else callback(score);
+
         })
     })
 };

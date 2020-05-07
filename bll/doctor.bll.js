@@ -11,7 +11,6 @@ var encryptService = require('../bll/encrypt.bll');
 const contractDoctorType = 'DOCTOR_CONTRACT';
 
 exports.registerDoctor = function (doctor, callback) {
-    console.log(doctor);
     encryptService.generateKeys(doctor.username, (publicKey) => {
 
         let doctorToInsert = new UserModel({

@@ -108,7 +108,7 @@ exports.getAllConsultedPatients = function (account, password, contract, callbac
             }
         )
     })
-}
+};
 
 function getContractPatientsArray(contract, number) {
     return new Promise(resolve => contract.methods.patientsArray(number).call(null, (err, contractAddress) => {

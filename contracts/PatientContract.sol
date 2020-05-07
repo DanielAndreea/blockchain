@@ -10,8 +10,12 @@ contract PatientContract{
     string public identifier;
     address public owner;
     bool public donor;
+	
      //map with doctors
     mapping(address => bool) public doctors;
+    address[] public myDoctors;
+    uint public numberOfMyDoctors;
+	
     mapping(string => address) public organs;
     
     //mapping with IPFShash -> document name
@@ -32,8 +36,11 @@ contract PatientContract{
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))) );
     }
        
+         
     function addDoctorToPatientMap(address _doctorContractAddress, bool value) public {
         doctors[_doctorContractAddress] = value;    
+        myDoctors.push(_doctorContractAddress);
+        numberOfMyDoctors++;
     }
     
     function addOrganToMap(string memory _organ) public returns(bool){

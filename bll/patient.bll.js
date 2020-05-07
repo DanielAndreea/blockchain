@@ -1,4 +1,5 @@
 var patientDao = require('../dao/patient.dao');
+var doctorDao = require('../dao/doctor.dao');
 var UserModel = require('../models/user.model');
 var ContractModel = require('../models/contract.model');
 var deployService = require('../utils/deploy');
@@ -6,13 +7,14 @@ var ethPatientDao = require('../eth-dao/eth.patient.dao');
 var loadService = require('../utils/loadContract');
 var encryptService = require('../bll/encrypt.bll');
 const contractPatientType = 'PATIENT_CONTRACT';
+var medicalRegistry = require('../bll/medicalRegistry.bll');
 
 exports.registerPatient = function (patient, callback) {
-    encryptService.generateKeys(patient.username, (publicKey) =>{
+    encryptService.generateKeys(patient.username, (publicKey) => {
         let patientToInsert = new UserModel({
             username: patient.username,
             password: patient.password,
-            role:patient.role,
+            role: patient.role,
             account: patient.account,
             accountPassword: patient.accountPassword,
             publicKey: publicKey
@@ -40,10 +42,8 @@ exports.deployPatientContract = function (username, abi, bin, callback) {
 
 exports.registerUpdateContract = function (abi, username, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
-        console.log(patient);
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
-                console.log('BEFORE ENTERING IN ETH PATIENT DAO');
                 ethPatientDao.registerPatientInContract(patient[0].account,
                     patient[0].accountPassword,
                     contractAddress,
@@ -56,12 +56,11 @@ exports.registerUpdateContract = function (abi, username, callback) {
 };
 
 
-exports.getPatientData = function (abi, username, organ, callback) {
+exports.getPatientData = function (abi, username, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
-                ethPatientDao.getPatientDataFromContract(patient[0].account, patient[0].accountPassword, contract, organ, (patient) => {
-                    console.log("From blockchain: ", patient);
+                ethPatientDao.getPatientDataFromContract(patient[0].account, patient[0].accountPassword, contract, (patient) => {
                     callback(patient);
                 })
             });
@@ -71,11 +70,7 @@ exports.getPatientData = function (abi, username, organ, callback) {
 
 exports.addDoctorToPatientMap = function (abi, username, doctorContractAddress, status, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
-        console.log('-------PATIENT---------');
-        console.log(patient);
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
-            console.log('----------PATIENT CONTRACT ADDRESS-------------');
-            console.log(contractAddress);
             loadService.loadContract(abi, contractAddress, (contract) => {
                 let response = ethPatientDao.addDoctorToPatientMap(patient[0].account,
                     patient[0].accountPassword,
@@ -84,7 +79,6 @@ exports.addDoctorToPatientMap = function (abi, username, doctorContractAddress, 
                     contractAddress,
                     contract, (response) => {
                         if (response) {
-                            console.log('FROM PATIENT bll: ', response);
                             callback(response);
                         }
                     });
@@ -155,7 +149,7 @@ exports.addFileHash = function (abi, username, hash, name, callback) {
     })
 };
 
-exports.getDocuments = function(abi,username,callback){
+exports.getDocuments = function (abi, username, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
@@ -168,4 +162,25 @@ exports.getDocuments = function(abi,username,callback){
             })
         })
     })
-}
+};
+
+exports.markPatientAsDonor = function (abi, docUsername, patientUsername, callback) {
+    doctorDao.getDoctorByUsername(docUsername, (doctor) => {
+        doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
+            patientDao.getPatientByUsername(patientUsername, (patient) => {
+                patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+                    loadService.loadContract(abi, contractAddress, (contract) => {
+                        ethPatientDao.markPatientAsDonor(doctor[0].account,
+                            doctor[0].accountPassword,
+                            contractAddress,
+                            contract,
+                            (response) => {
+                                callback(response)
+                            })
+                    })
+                })
+            })
+
+        })
+    })
+};

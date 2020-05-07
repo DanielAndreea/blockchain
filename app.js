@@ -13,6 +13,7 @@ var userController = require('./routes/user.controller');
 var contractController = require('./routes/contract.controller');
 var encryptController = require('./routes/encrypt.controller');
 var liverController = require('./routes/liver.controller');
+var registryController = require('./routes/medicalRegistry.controller');
 
 //WEB 3
 var web3Lib = require('web3');
@@ -53,6 +54,7 @@ app.use('/user', userController);
 app.use('/contract', contractController);
 app.use('/encrypt', encryptController);
 app.use('/liver', liverController);
+app.use('/medicalRegistry', registryController);
 
 
 // catch 404 and forward to error handler
