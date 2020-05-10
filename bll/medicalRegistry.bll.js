@@ -6,7 +6,11 @@ var deployService = require('../utils/deploy');
 var contractDao = require('../dao/contract.dao');
 var account = '0x76FBA49331c531564A67BdfEF8E0bD2F36653322';
 var password = 'passphrase-generator';
+var ethPatientDao = require('../eth-dao/eth.patient.dao');
+var ethDoctorDao = require('../eth-dao/eth.doctor.dao');
+
 var ContractModel = require('../models/contract.model');
+
 
 exports.deployMedicalRegistryContract = function (abi, bin, callback) {
     deployService.deploy(abi, bin, account, password, (address) => {
@@ -71,18 +75,35 @@ exports.markReceiver = function (abi, docUsername, patientUsername, score, callb
 exports.getReceivers = function (abi, callback) {
     contractDao.getContractByType('MEDICAL_REGISTRY', (medicalRegistryContract) => {
         loadService.loadContract(abi, medicalRegistryContract[0].contractAddress, (contract) => {
-            console.log(medicalRegistryContract[0].contractAddress)
             ethMedicalRegistryDao.getReceivers(
                 account,
                 password,
                 contract,
-                (res) => callback(res)
+                (res) => {
+                    ethMedicalRegistryDao.getReceiversDetails(
+                        account,
+                        password,
+                        contract,
+                        res,
+                        callback
+                    )
+                }
             )
         })
-
-
     })
 };
+
+exports.getReceiversFinal = function (patientAbi, doctorAbi, list, callback) {
+    ethMedicalRegistryDao.getFinalListReceivers(
+        account,
+        password,
+        patientAbi,
+        doctorAbi,
+        list,
+        callback
+    )
+};
+
 
 exports.getDonors = function (abi, callback) {
     contractDao.getContractByType('MEDICAL_REGISTRY', (medicalRegistryContract) => {
@@ -91,7 +112,15 @@ exports.getDonors = function (abi, callback) {
                 account,
                 password,
                 contract,
-                (res) => {console.log(res); callback(res)}
+                (res) => {
+                    ethMedicalRegistryDao.getDonorsDetails(
+                        account,
+                        password,
+                        contract,
+                        res,
+                        callback
+                    )
+                }
             )
         })
     })

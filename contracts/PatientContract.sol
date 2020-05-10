@@ -10,7 +10,8 @@ contract PatientContract{
     string public identifier;
     address public owner;
     bool public donor;
-	
+	bool public receiver;
+
      //map with doctors
     mapping(address => bool) public doctors;
     address[] public myDoctors;
@@ -70,5 +71,9 @@ contract PatientContract{
 
     function markPatientAsDonor() public {
         donor = true;
+    }
+
+    function markPatientAsReceiver() public {
+        receiver = true;
     }
 }

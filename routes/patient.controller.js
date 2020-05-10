@@ -110,4 +110,17 @@ router.post('/markDonor', (req,res)=>{
 
     })
 });
+
+router.post('/markReceiver', (req,res)=>{
+    const doctorUsername = req.body.doctorUsername;
+    const patientUsername = req.body.patientUsername;
+    PatientService.markPatientAsReceiver(parsedABI,doctorUsername,patientUsername, (response) =>{
+        PatientService.addOrganToPatientMap(parsedABI,patientUsername,doctorUsername,'LIVER', (resp) =>{
+            res.send(resp);
+            // RegistryService.markReceiver(registryParsedABI,doctorUsername,patientUsername, (resp) =>{
+            //     res.send(resp)
+            // });
+        });
+    })
+});
 module.exports = router;

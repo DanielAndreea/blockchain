@@ -24,12 +24,15 @@ exports.getPatientDataFromContract = function (account, password, contract, call
         contract.methods.owner().call(null, (err, owner) => {
             contract.methods.identifier().call(null, (err, identifier) => {
                 contract.methods.donor().call(null, (err, donor) => {
-                    let patient = {
-                        owner: owner,
-                        identifier: identifier,
-                        donor: donor
-                    };
-                    callback(patient);
+                    contract.methods.receiver().call(null, (err, receiver) => {
+                        let patient = {
+                            owner: owner,
+                            identifier: identifier,
+                            donor: donor,
+                            receiver: receiver
+                        };
+                        callback(patient);
+                    })
                 })
             });
         });
@@ -111,7 +114,7 @@ exports.getDocuments = function (account, password, contract, callback) {
             if (err) console.log(err);
             for (let i = 0; i < number; i++) {
                 let document = await getDoc(contract, i);
-                let fileName = await getMapping(contract,document);
+                let fileName = await getMapping(contract, document);
                 documents.push(document);
                 myMap.push({hash: document, name: fileName});
             }
@@ -121,13 +124,31 @@ exports.getDocuments = function (account, password, contract, callback) {
 };
 
 
-exports.markPatientAsDonor = function(account,password,contractAddress,contract,callback){
-    web3.eth.personal.unlockAccount(account,password,null,(err) =>{
-        if(err) callback(err);
+exports.markPatientAsDonor = function (account, password, contractAddress, contract, callback) {
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) callback(err);
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
             data: contract.methods.markPatientAsDonor().encodeABI(),
+            gasPrice: 5000
+        })
+            .then((data) => {
+                callback(data);
+            })
+            .catch((err) => {
+                callback(err);
+            })
+    })
+};
+
+exports.markPatientAsReceiver = function (account, password, contractAddress, contract, callback) {
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) callback(err);
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.markPatientAsReceiver().encodeABI(),
             gasPrice: 5000
         })
             .then((data) => {
@@ -145,7 +166,7 @@ function getDoc(contract, number) {
     }))
 }
 
-function getMapping(contract,hash) {
+function getMapping(contract, hash) {
     return new Promise(resolve => contract.methods.documents(hash).call(null, (err, doc) => {
         resolve(doc);
     }))

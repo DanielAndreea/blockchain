@@ -87,24 +87,28 @@ exports.addDoctorToPatientMap = function (abi, username, doctorContractAddress, 
     })
 };
 
-exports.addOrganToPatientMap = function (abi, username, organ, callback) {
-    patientDao.getPatientByUsername(username, (patient) => {
-            patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
-                loadService.loadContract(abi, contractAddress, (contract) => {
-                    ethPatientDao.addOrganToMap(patient[0].account,
-                        patient[0].accountPassword,
-                        organ,
-                        contractAddress,
-                        contract,
-                        (res) => {
-                            console.log(res);
-                            callback(res);
-                        }
-                    )
-                })
-            })
-        }
-    )
+exports.addOrganToPatientMap = function (abi, patientUsername,docUsername, organ, callback) {
+    doctorDao.getDoctorByUsername(docUsername, (doctor) => {
+        doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
+            patientDao.getPatientByUsername(patientUsername, (patient) => {
+                    patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+                        loadService.loadContract(abi, contractAddress, (contract) => {
+                            ethPatientDao.addOrganToMap(doctor[0].account,
+                                doctor[0].accountPassword,
+                                organ,
+                                contractAddress,
+                                contract,
+                                (res) => {
+                                    console.log(res);
+                                    callback(res);
+                                }
+                            )
+                        })
+                    })
+                }
+            )
+        })
+    })
 };
 
 exports.getOrganAddressByName = function (abi, username, organ, callback) {
@@ -171,6 +175,27 @@ exports.markPatientAsDonor = function (abi, docUsername, patientUsername, callba
                 patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
                     loadService.loadContract(abi, contractAddress, (contract) => {
                         ethPatientDao.markPatientAsDonor(doctor[0].account,
+                            doctor[0].accountPassword,
+                            contractAddress,
+                            contract,
+                            (response) => {
+                                callback(response)
+                            })
+                    })
+                })
+            })
+
+        })
+    })
+};
+
+exports.markPatientAsReceiver = function (abi, docUsername, patientUsername, callback) {
+    doctorDao.getDoctorByUsername(docUsername, (doctor) => {
+        doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
+            patientDao.getPatientByUsername(patientUsername, (patient) => {
+                patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+                    loadService.loadContract(abi, contractAddress, (contract) => {
+                        ethPatientDao.markPatientAsReceiver(doctor[0].account,
                             doctor[0].accountPassword,
                             contractAddress,
                             contract,
