@@ -117,9 +117,6 @@ router.post('/markReceiver', (req,res)=>{
     PatientService.markPatientAsReceiver(parsedABI,doctorUsername,patientUsername, (response) =>{
         PatientService.addOrganToPatientMap(parsedABI,patientUsername,doctorUsername,'LIVER', (resp) =>{
             res.send(resp);
-            // RegistryService.markReceiver(registryParsedABI,doctorUsername,patientUsername, (resp) =>{
-            //     res.send(resp)
-            // });
         });
     })
 });

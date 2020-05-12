@@ -7,7 +7,7 @@ exports.registerPatient = function (patientToInsert, callback) {
             callback(data);
         })
         .catch(error => callback(error));
-}
+};
 
 exports.saveContract = function (contractToInsert, callback) {
     contractToInsert.save()
