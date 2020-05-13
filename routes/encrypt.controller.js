@@ -15,7 +15,6 @@ router.post('/generateKeys', (req, res) => {
 router.post('/encryptFile', (req, res) => {
     var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
-        console.log(fields.file)
         encryptService.encryptFile(fields.file, fields.username, (data) => {
             res.send(data);
         })
@@ -37,7 +36,10 @@ router.get('/download/:username', (req, res) => {
     if(fs.existsSync(file)){
         fs.readFile(file, (err, data) => {
             if (err) res.send(err);
-            res.send(new Buffer(data, 'binary'));
+            fs.unlink(file, (err) =>{
+                if(err) res.send(err);
+                res.send(new Buffer(data, 'binary'));
+            });
         });
     }else{
         res.send({code: 500, message: 'No permission'});

@@ -36,7 +36,8 @@ exports.getAllRequestsForDoctor = function (doctor, callback) {
 exports.updateRequestStatus = function (id, callback) {
     RequestsModel.find({_id: id})
         .then(data => {
-            let newReq = {
+            console.log(data)
+            let newReq = new RequestsModel({
                 _id: id,
                 patient: data.patient,
                 doctor: data.doctor,
@@ -44,7 +45,7 @@ exports.updateRequestStatus = function (id, callback) {
                 name: data.name,
                 status: 'APPROVED',
                 date: data.date,
-            };
+            });
             RequestsModel.update({_id: id}, newReq)
                 .then(data2 => callback(data2))
                 .catch(error => callback(error))

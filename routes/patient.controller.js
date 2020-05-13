@@ -27,7 +27,6 @@ var registryBIN = fs.readFileSync(path.resolve(registryBinJSON));
 router.post('/deploy', (req, res) => {
     const username = req.body.username;
     PatientService.deployPatientContract(username, parsedABI, '0x' + BIN, (data) => {
-        console.log(data);
         res.send(data);
     });
 });
@@ -45,7 +44,8 @@ router.get('/getMongoIdentifier', (req, res) => {
 
 router.post('/register-contract', (req, res) => {
     const username = req.body.username;
-    PatientService.registerUpdateContract(parsedABI, username, (data) => {
+    const ssn = req.body.ssn;
+    PatientService.registerUpdateContract(parsedABI, username, ssn, (data) => {
         res.send(data);
     });
 
@@ -94,28 +94,28 @@ router.get('/getScore/:organ/:username', (req, res) => {
     const organ = req.params.organ;
     const username = req.params.username;
     PatientService.getOrganAddressByName(parsedABI, username, organ, (organAddress) => {
-        LiverService.getScoreByPatient(liverParsedABI,username, organAddress, (score) => {
+        LiverService.getScoreByPatient(liverParsedABI, username, organAddress, (score) => {
             res.send(score)
         })
     })
 });
 
-router.post('/markDonor', (req,res)=>{
+router.post('/markDonor', (req, res) => {
     const doctorUsername = req.body.doctorUsername;
     const patientUsername = req.body.patientUsername;
-    PatientService.markPatientAsDonor(parsedABI,doctorUsername,patientUsername, (response) =>{
-        RegistryService.markDonor(registryParsedABI,doctorUsername,patientUsername, (resp) =>{
+    PatientService.markPatientAsDonor(parsedABI, doctorUsername, patientUsername, (response) => {
+        RegistryService.markDonor(registryParsedABI, doctorUsername, patientUsername, (resp) => {
             res.send(resp)
         });
 
     })
 });
 
-router.post('/markReceiver', (req,res)=>{
+router.post('/markReceiver', (req, res) => {
     const doctorUsername = req.body.doctorUsername;
     const patientUsername = req.body.patientUsername;
-    PatientService.markPatientAsReceiver(parsedABI,doctorUsername,patientUsername, (response) =>{
-        PatientService.addOrganToPatientMap(parsedABI,patientUsername,doctorUsername,'LIVER', (resp) =>{
+    PatientService.markPatientAsReceiver(parsedABI, doctorUsername, patientUsername, (response) => {
+        PatientService.addOrganToPatientMap(parsedABI, patientUsername, doctorUsername, 'LIVER', (resp) => {
             res.send(resp);
         });
     })

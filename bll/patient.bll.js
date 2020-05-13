@@ -8,6 +8,7 @@ var loadService = require('../utils/loadContract');
 var encryptService = require('../bll/encrypt.bll');
 const contractPatientType = 'PATIENT_CONTRACT';
 var medicalRegistry = require('../bll/medicalRegistry.bll');
+var crypto = require('crypto');
 
 exports.registerPatient = function (patient, callback) {
     encryptService.generateKeys(patient.username, (publicKey) => {
@@ -40,15 +41,18 @@ exports.deployPatientContract = function (username, abi, bin, callback) {
 };
 
 
-exports.registerUpdateContract = function (abi, username, callback) {
+exports.registerUpdateContract = function (abi, username, ssn, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
+                var mykey = crypto.createCipher('aes-128-cbc', 'something-secret');
+                var mystr = mykey.update(username + ssn, 'utf8', 'hex')
+                mystr += mykey.final('hex');
                 ethPatientDao.registerPatientInContract(patient[0].account,
                     patient[0].accountPassword,
                     contractAddress,
                     contract,
-                    "newId",
+                    mystr,
                     callback);
             });
         });
@@ -87,7 +91,7 @@ exports.addDoctorToPatientMap = function (abi, username, doctorContractAddress, 
     })
 };
 
-exports.addOrganToPatientMap = function (abi, patientUsername,docUsername, organ, callback) {
+exports.addOrganToPatientMap = function (abi, patientUsername, docUsername, organ, callback) {
     doctorDao.getDoctorByUsername(docUsername, (doctor) => {
         doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
             patientDao.getPatientByUsername(patientUsername, (patient) => {

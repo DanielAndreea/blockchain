@@ -27,9 +27,11 @@ router.get('/doctor/requests/:doctor', (req, res) => {
     })
 });
 
-router.put('/updateRequest/:id', (req, res) => {
+router.post('/updateRequest/:id', (req, res) => {
     const id = req.params.id;
+    console.log(id)
     requestsService.updateRequest(id, (response) => {
+
         res.send(response)
     })
 });

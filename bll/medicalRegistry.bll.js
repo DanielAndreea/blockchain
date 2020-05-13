@@ -100,10 +100,53 @@ exports.getReceiversFinal = function (patientAbi, doctorAbi, list, callback) {
         patientAbi,
         doctorAbi,
         list,
-        callback
+        (result) => {
+            // callback(result)
+            console.log(result.length)
+            callback(quickSort(result, 0, result.length-1));
+        }
     )
 };
 
+function swap(items, leftIndex, rightIndex) {
+    var temp = items[leftIndex];
+    items[leftIndex] = items[rightIndex];
+    items[rightIndex] = temp;
+}
+
+function partition(items, left, right) {
+    var pivot = items[Math.floor((right + left) / 2)].info.info.score; //middle element
+    var i = left; //left pointer
+    var j = right; //right pointer
+    while (i <= j) {
+        while (items[i].info.info.score > pivot) {
+            i++;
+        }
+        while (items[j].info.info.score < pivot) {
+            j--;
+        }
+        if (i <= j) {
+            swap(items, i, j); //sawpping two elements
+            i++;
+            j--;
+        }
+    }
+    return i;
+}
+
+function quickSort(items, left, right) {
+    var index;
+    if (items.length > 1) {
+        index = partition(items, left, right); //index returned from partition
+        if (left < index - 1) { //more elements on the left side of the pivot
+            quickSort(items, left, index - 1);
+        }
+        if (index < right) { //more elements on the right side of the pivot
+            quickSort(items, index, right);
+        }
+    }
+    return items;
+}
 
 exports.getDonors = function (abi, callback) {
     contractDao.getContractByType('MEDICAL_REGISTRY', (medicalRegistryContract) => {
