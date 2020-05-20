@@ -1,4 +1,4 @@
-var requestsDao = require('../dao/requests.dao');
+var requestsDao = require('../eth-dao/requests.dao');
 
 exports.createRequest = function (doctor, patient, hash,name, callback) {
     requestsDao.createNewRequest(doctor, patient, hash,name, callback);

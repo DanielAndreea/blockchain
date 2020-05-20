@@ -120,4 +120,38 @@ router.post('/markReceiver', (req, res) => {
         });
     })
 });
+
+router.post('/createRequest', (req, res) => {
+    const doctor = req.body.doctorUsername;
+    const patient = req.body.patientUsername;
+    const hash = req.body.fileHash;
+    const name = req.body.fileName;
+    PatientService.createRequest(parsedABI, doctor, patient, hash, name, (response) => {
+        res.send(response);
+    })
+});
+
+router.post('/approveRequest', (req, res) => {
+    const doctor = req.body.doctorUsername;
+    const patient = req.body.patientUsername;
+    const hash = req.body.fileHash;
+    PatientService.approveRequest(parsedABI, doctor, patient, hash, (response) => {
+        res.send(response);
+    })
+});
+
+router.post('/setTrustedPerson', (req, res) => {
+    const patient = req.body.patientUsername;
+    const person = req.body.personUsername;
+    PatientService.setTrustedPerson(parsedABI, patient, person, (response) => {
+        res.send(response);
+    })
+});
+
+router.get('/getRequests/:username', (req, res) => {
+    const username = req.params.username;
+    PatientService.getRequests(parsedABI, username, (data) => {
+        res.send(data)
+    })
+});
 module.exports = router;

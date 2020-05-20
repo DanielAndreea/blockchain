@@ -30,9 +30,17 @@ contract MedicalRegistry{
     }
     
     function markPatientAsReceiver(address _contractAddress, string memory _timestamp, address _doctorContract, uint _score) public {
-        receivers[_contractAddress] = Receiver(_timestamp,_doctorContract,_score);
-        receiversContractAddresses.push(_contractAddress);
-        numberOfReceivers++;
+        if(receivers[_contractAddress].doctorContract == 0x0000000000000000000000000000000000000000){
+            receivers[_contractAddress] = Receiver(_timestamp,_doctorContract,_score);
+            receiversContractAddresses.push(_contractAddress);
+            numberOfReceivers++;    
+        }else {
+            Receiver storage req = receivers[_contractAddress];
+            req.timestamp = _timestamp;
+            req.doctorContract = _doctorContract;
+            req.score = _score;
+        }
+        
     }
     
     function addDoctorToDoctorsMap(address _contractAddress, address _accountAddress) public{

@@ -149,7 +149,6 @@ exports.addFileHash = function (abi, username, hash, name, callback) {
                     contractAddress,
                     contract,
                     (response) => {
-                        console.log(response);
                         callback(response)
                     })
             })
@@ -210,6 +209,85 @@ exports.markPatientAsReceiver = function (abi, docUsername, patientUsername, cal
                 })
             })
 
+        })
+    })
+};
+
+exports.createRequest = function (abi, docUsername, patientUsername, fileHash,fileName, callback) {
+    doctorDao.getDoctorByUsername(docUsername, (doctor) => {
+        doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
+            patientDao.getPatientByUsername(patientUsername, (patient) => {
+                patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+                    loadService.loadContract(abi, contractAddress, (contract) => {
+                        ethPatientDao.createRequest(doctor[0].account,
+                            doctor[0].accountPassword,
+                            contractAddress,
+                            contract,
+                            docContractAddress,
+                            fileHash,
+                            fileName,
+                            (response) => {
+                                callback(response)
+                            })
+                    })
+                })
+            })
+        })
+    })
+};
+
+exports.approveRequest = function (abi, docUsername, patientUsername, fileHash, callback) {
+    doctorDao.getDoctorByUsername(docUsername, (doctor) => {
+        doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
+            patientDao.getPatientByUsername(patientUsername, (patient) => {
+                patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+                    loadService.loadContract(abi, contractAddress, (contract) => {
+                        ethPatientDao.approveRequest(doctor[0].account,
+                            doctor[0].accountPassword,
+                            contractAddress,
+                            contract,
+                            docContractAddress,
+                            (response) => {
+                                callback(response)
+                            })
+                    })
+                })
+            })
+        })
+    })
+};
+
+//TODO: get requests for doctor (split map key and extract doctor contract address)
+exports.getRequests = function (abi, username, callback) {
+    patientDao.getPatientByUsername(username, (patient) => {
+        patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                ethPatientDao.getRequests(patient[0].account,
+                    patient[0].accountPassword,
+                    contract,
+                    (response) => {
+                        callback(response)
+                    })
+            })
+        })
+    })
+};
+
+exports.setTrustedPerson = function (abi, username, personUsername, callback) {
+    patientDao.getPatientByUsername(username, (patient) => {
+        patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
+            patientDao.getPatientByUsername(personUsername, (trusted) => {
+                loadService.loadContract(abi, contractAddress, (contract) => {
+                    ethPatientDao.setTrustedPerson(patient[0].account,
+                        patient[0].accountPassword,
+                        contract,
+                        contractAddress,
+                        trusted[0].account,
+                        (response) => {
+                            callback(response)
+                        })
+                })
+            })
         })
     })
 };

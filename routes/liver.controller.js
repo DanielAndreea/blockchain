@@ -36,9 +36,7 @@ router.post('/computeMELD', (req, res) => {
     const dialysis = req.body.dialysis;
     PatientService.getOrganAddressByName(parsedABI, patientUsername, organ, (organAddress) => {
         LiverService.computeScore(liverParsedABI, doctorUsername, organAddress, bilirubin, inr, creatinine, dialysis, (resp) => {
-            console.log('BEFORE GET SCORE-------------------------------------------')
             LiverService.getScoreByDoctor(liverParsedABI, doctorUsername, organAddress, (score) => {
-                console.log('COMPUTED SCORE : ', score)
                 RegistryService.markReceiver(registryParsedABI, doctorUsername, patientUsername, score, (response) => {
                     res.send(response)
                 })
