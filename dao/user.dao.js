@@ -5,5 +5,13 @@ exports.getAllUsers = function (callback) {
         .then((list) => {
             callback(list);
         })
-        .catch(console.log);
-}
+        .catch(error => callback(error));
+};
+
+exports.getPublicKeyByUser = function (username, callback) {
+    UserModel.find({username: username})
+        .then((data) => {
+            callback(data, null)
+        })
+        .catch(err => callback(null, err))
+};

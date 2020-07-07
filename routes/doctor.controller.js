@@ -28,7 +28,6 @@ var liverBIN = fs.readFileSync(path.resolve(liverBinJSON));
 router.post('/deploy', (req, res) => {
     const username = req.body.username;
     DoctorService.deployDoctorContract(username, parsedABI, '0x' + BIN, (data) => {
-        console.log(data);
         res.send(data);
     })
 });
@@ -59,8 +58,9 @@ router.get('/getDoctorData-contract', (req, res) => {
 router.post('/consult-patient', (req, res) => {
     const doctorUsername = req.body.doctorUsername;
     const patientUsername = req.body.patientUsername;
-    DoctorService.consultPatient(parsedABI, patientParsedABI, patientUsername, doctorUsername, (data) => {
-        res.send(data)
+    const ssn = req.body.ssn;
+    DoctorService.consultPatient(parsedABI, patientParsedABI, ssn, patientUsername, doctorUsername, (data) => {
+        res.json(data)
     });
 });
 
@@ -74,8 +74,7 @@ router.get('/getConsultedPatient', (req, res) => {
 
 router.post('/getDoctorPatients', (req, res) => {
     const doctorUsername = req.body.username;
-    console.log(doctorUsername)
-    DoctorService.getAllConsultedPatients(parsedABI, doctorUsername, (result) => {
+    DoctorService.getAllConsultedPatients(parsedABI,patientParsedABI, doctorUsername, (result) => {
         res.send(result)
     })
 })
@@ -86,7 +85,6 @@ router.get('/getScore/:organ/:patientUsername/:doctorUsername', (req, res) => {
     const doctorUsername = req.params.doctorUsername;
     PatientService.getOrganAddressByName(patientParsedABI, patientUsername, organ, (organAddress) => {
         LiverService.getScoreByDoctor(liverParsedABI,doctorUsername, organAddress, (score) => {
-            console.log(score);
             res.send(score)
         })
     })

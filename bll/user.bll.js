@@ -3,16 +3,14 @@ var contractService = require('./contract.bll');
 var constants = require('../utils/constants');
 var UserModel = require('../models/user.model');
 
-
 exports.login = function (username, password, callback) {
     try {
         UserModel.findOne({username: username})
             .then((user) => {
-                if(user) {
-                    if(user.password === password) callback(user);
+                if (user) {
+                    if (user.password === password) callback(user);
                     else callback('Wrong credentials');
-                }
-                else callback('Wrong credentials');
+                } else callback('Wrong credentials');
             })
             .catch((error) => console.log(error))
     } catch (error) {
@@ -21,6 +19,10 @@ exports.login = function (username, password, callback) {
 };
 exports.getAllUsers = function (callback) {
     userDao.getAllUsers((result) => callback(result));
+};
+
+exports.getPublicKeyByUser = function (username, callback) {
+    userDao.getPublicKeyByUser(username, callback);
 };
 
 exports.getPatientUsers = function (callback) {

@@ -9,21 +9,26 @@ var encryptService = require('../bll/encrypt.bll');
 const contractPatientType = 'PATIENT_CONTRACT';
 var medicalRegistry = require('../bll/medicalRegistry.bll');
 var crypto = require('crypto');
-
+var transferService = require('../utils/transfer');
+var SHA256 = require("crypto-js/sha256");
+const senderAccount = '0x7639B9129ddA354F32c54d370D7BF2a1F68DE279';
+const senderPassword = 'passphrase-battery';
 exports.registerPatient = function (patient, callback) {
     encryptService.generateKeys(patient.username, (publicKey) => {
-        let patientToInsert = new UserModel({
-            username: patient.username,
-            password: patient.password,
-            role: patient.role,
-            account: patient.account,
-            accountPassword: patient.accountPassword,
-            publicKey: publicKey
-        });
-
-        patientDao.registerPatient(patientToInsert, callback);
+        ethPatientDao.generateNewAccount(patient.username, (account) => {
+            transferService.transferMoneyToNewAccount(senderAccount, senderPassword, account, (result) => {
+                let patientToInsert = new UserModel({
+                    username: patient.username,
+                    password: patient.password,
+                    role: patient.role,
+                    account: account,
+                    accountPassword: patient.username,
+                    publicKey: publicKey
+                });
+                patientDao.registerPatient(patientToInsert, callback);
+            })
+        })
     })
-
 };
 
 
@@ -45,9 +50,8 @@ exports.registerUpdateContract = function (abi, username, ssn, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
-                var mykey = crypto.createCipher('aes-128-cbc', 'something-secret');
-                var mystr = mykey.update(username + ssn, 'utf8', 'hex')
-                mystr += mykey.final('hex');
+                var md5sum = crypto.createHash('md5');
+                var mystr = md5sum.update(username + ssn).digest('hex');
                 ethPatientDao.registerPatientInContract(patient[0].account,
                     patient[0].accountPassword,
                     contractAddress,
@@ -70,8 +74,9 @@ exports.getPatientData = function (abi, username, callback) {
             });
         });
     })
-}
+};
 
+//doctor contract address is account!!! sent from bll
 exports.addDoctorToPatientMap = function (abi, username, doctorContractAddress, status, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
@@ -103,7 +108,6 @@ exports.addOrganToPatientMap = function (abi, patientUsername, docUsername, orga
                                 contractAddress,
                                 contract,
                                 (res) => {
-                                    console.log(res);
                                     callback(res);
                                 }
                             )
@@ -124,7 +128,6 @@ exports.getOrganAddressByName = function (abi, username, organ, callback) {
                     contract,
                     organ,
                     (res) => {
-                        console.log(res);
                         callback(res);
                     })
             })
@@ -134,6 +137,13 @@ exports.getOrganAddressByName = function (abi, username, organ, callback) {
 
 exports.getPatientByAccount = function (account) {
     return new Promise(resolve => patientDao.getPatientByAccount(account, (p) =>
+        resolve(p))
+    );
+};
+
+
+exports.getPatientFromContractByUsername = function (patientAbi, username) {
+    return new Promise(resolve => exports.getPatientData(patientAbi, username, (p) =>
         resolve(p))
     );
 };
@@ -213,16 +223,21 @@ exports.markPatientAsReceiver = function (abi, docUsername, patientUsername, cal
     })
 };
 
-exports.createRequest = function (abi, docUsername, patientUsername, fileHash,fileName, callback) {
+exports.createRequest = function (abi, docUsername, patientUsername, fileHash, fileName, callback) {
     doctorDao.getDoctorByUsername(docUsername, (doctor) => {
         doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
             patientDao.getPatientByUsername(patientUsername, (patient) => {
                 patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
                     loadService.loadContract(abi, contractAddress, (contract) => {
+                        var mykey = crypto.createCipher('aes-128-cbc', 'something-secret');
+                        var mapKey = mykey.update(docContractAddress + fileHash + new Date(), 'utf8', 'hex')
+                        mapKey += mykey.final('hex');
+
                         ethPatientDao.createRequest(doctor[0].account,
                             doctor[0].accountPassword,
                             contractAddress,
                             contract,
+                            mapKey,
                             docContractAddress,
                             fileHash,
                             fileName,
@@ -236,17 +251,18 @@ exports.createRequest = function (abi, docUsername, patientUsername, fileHash,fi
     })
 };
 
-exports.approveRequest = function (abi, docUsername, patientUsername, fileHash, callback) {
+exports.approveRequest = function (abi, docUsername, patientUsername, fileHash, mapKey, callback) {
     doctorDao.getDoctorByUsername(docUsername, (doctor) => {
         doctorDao.getContractAddressByAccount(doctor[0].account, (docContractAddress) => {
             patientDao.getPatientByUsername(patientUsername, (patient) => {
                 patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {
                     loadService.loadContract(abi, contractAddress, (contract) => {
-                        ethPatientDao.approveRequest(doctor[0].account,
-                            doctor[0].accountPassword,
+                        ethPatientDao.approveRequest(patient[0].account,
+                            patient[0].accountPassword,
                             contractAddress,
                             contract,
                             docContractAddress,
+                            mapKey,
                             (response) => {
                                 callback(response)
                             })
@@ -257,7 +273,7 @@ exports.approveRequest = function (abi, docUsername, patientUsername, fileHash, 
     })
 };
 
-//TODO: get requests for doctor (split map key and extract doctor contract address)
+//TODO: get requests for doctor (split map key and extract doctor contract address) -nu pot ca fac hash cu date
 exports.getRequests = function (abi, username, callback) {
     patientDao.getPatientByUsername(username, (patient) => {
         patientDao.getContractAddressByAccount(patient[0].account, (contractAddress) => {

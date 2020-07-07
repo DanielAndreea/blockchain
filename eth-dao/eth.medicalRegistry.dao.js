@@ -160,28 +160,31 @@ exports.getFinalListReceivers = function (account, password, patientAbi, doctorA
 function getFinalReceivers(patientContract, doctorContract) {
     return new Promise(resolve => doctorContract.methods.owner().call(null, (err, owner) => {
         doctorContract.methods.firstName().call(null, (err, firstName) => {
-            doctorContract.methods.age().call(null, (err, age) => {
-                doctorContract.methods.specialization().call(null, (err, specialization) => {
-                    patientContract.methods.owner().call(null, (err, owner) => {
-                        patientContract.methods.identifier().call(null, (err, identifier) => {
-                            patientContract.methods.donor().call(null, (err, donor) => {
-                                let patient = {
-                                    owner: owner,
-                                    identifier: identifier,
-                                    donor: donor
-                                };
-                                let doctor = {
-                                    owner: owner,
-                                    firstName: firstName,
-                                    age: age,
-                                    specialization: specialization
-                                };
-                                let obj = {
-                                    patient: patient,
-                                    doctor: doctor
-                                };
-                                resolve(obj);
-                            })
+            doctorContract.methods.lastName().call(null, (err, lastName) => {
+                doctorContract.methods.age().call(null, (err, age) => {
+                    doctorContract.methods.specialization().call(null, (err, specialization) => {
+                        patientContract.methods.owner().call(null, (err, owner) => {
+                            patientContract.methods.identifier().call(null, (err, identifier) => {
+                                patientContract.methods.donor().call(null, (err, donor) => {
+                                    let patient = {
+                                        owner: owner,
+                                        identifier: identifier,
+                                        donor: donor
+                                    };
+                                    let doctor = {
+                                        owner: owner,
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        age: age,
+                                        specialization: specialization
+                                    };
+                                    let obj = {
+                                        patient: patient,
+                                        doctor: doctor
+                                    };
+                                    resolve(obj);
+                                })
+                            });
                         });
                     });
                 });

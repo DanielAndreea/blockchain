@@ -15,7 +15,7 @@ exports.saveContract = function (contractToInsert, callback) {
             callback(data);
         })
         .catch(error => callback(error));
-}
+};
 
 exports.getPatientIdentifier = function (username, callback) {
     UserModel.find({username: username})
@@ -23,7 +23,7 @@ exports.getPatientIdentifier = function (username, callback) {
             callback(data[0]._id);
         })
         .catch(console.log);
-}
+};
 
 exports.getPatientByUsername = function (username, callback) {
     UserModel.find({username: username})
@@ -31,7 +31,7 @@ exports.getPatientByUsername = function (username, callback) {
             callback(data);
         })
         .catch(console.log);
-}
+};
 
 exports.getPatientByAccount = function (account, callback){
     UserModel.find({account: account})
@@ -39,7 +39,7 @@ exports.getPatientByAccount = function (account, callback){
             callback(data);
         })
         .catch(console.log);
-}
+};
 
 exports.getContractAddressByAccount = function (account, callback) {
     ContractModel.find({contractOwner: account})
@@ -47,5 +47,5 @@ exports.getContractAddressByAccount = function (account, callback) {
             callback(contract[0].contractAddress);
         })
         .catch(console.log);
-}
+};
 

@@ -41,7 +41,6 @@ router.post('/computeMELD', (req, res) => {
                     res.send(response)
                 })
             })
-            // res.send(resp)
         })
     })
 })

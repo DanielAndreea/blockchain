@@ -101,8 +101,6 @@ exports.getReceiversFinal = function (patientAbi, doctorAbi, list, callback) {
         doctorAbi,
         list,
         (result) => {
-            // callback(result)
-            console.log(result.length)
             callback(quickSort(result, 0, result.length-1));
         }
     )
@@ -115,18 +113,18 @@ function swap(items, leftIndex, rightIndex) {
 }
 
 function partition(items, left, right) {
-    var pivot = items[Math.floor((right + left) / 2)].info.info.score; //middle element
-    var i = left; //left pointer
-    var j = right; //right pointer
+    var pivot = parseInt(items[Math.floor((right + left) / 2)].info.info.score);
+    var i = left;
+    var j = right;
     while (i <= j) {
-        while (items[i].info.info.score > pivot) {
+        while (parseInt(items[i].info.info.score) > pivot) {
             i++;
         }
-        while (items[j].info.info.score < pivot) {
+        while (parseInt(items[j].info.info.score) < pivot) {
             j--;
         }
         if (i <= j) {
-            swap(items, i, j); //sawpping two elements
+            swap(items, i, j);
             i++;
             j--;
         }
@@ -137,11 +135,11 @@ function partition(items, left, right) {
 function quickSort(items, left, right) {
     var index;
     if (items.length > 1) {
-        index = partition(items, left, right); //index returned from partition
-        if (left < index - 1) { //more elements on the left side of the pivot
+        index = partition(items, left, right);
+        if (left < index - 1) {
             quickSort(items, left, index - 1);
         }
-        if (index < right) { //more elements on the right side of the pivot
+        if (index < right) {
             quickSort(items, index, right);
         }
     }

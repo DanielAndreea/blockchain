@@ -32,6 +32,7 @@ contract PatientContract{
     address trustedPerson;
     
     struct Request{
+        address requestedBy;
         string timestampReceived;
         string timestampApproved;
         address approvedBy;
@@ -111,7 +112,7 @@ contract PatientContract{
     function createRequest(string memory _mapKey,string memory _timestampReceived, string memory _fileHash, string memory _fileName) public{
         require(doctors[msg.sender] == true, "Doctor is not in map.");
         address defaultAddress = 0xb853198d539F48f2D705AE9273d023C9874C742f;
-        requests[_mapKey] = Request(_timestampReceived, "null",defaultAddress,"PENDING",_fileHash,_fileName);
+        requests[_mapKey] = Request(msg.sender, _timestampReceived, "null",defaultAddress,"PENDING",_fileHash,_fileName);
         requestsArray.push(_mapKey);
         numberOfRequests++;
     } 

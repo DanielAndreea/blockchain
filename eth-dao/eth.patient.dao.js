@@ -1,3 +1,13 @@
+var doctorDao = require('../dao/doctor.dao');
+
+
+exports.generateNewAccount = function (user, callback) {
+    web3.eth.personal.newAccount(user, (error, account) => {
+        if (error) console.log(error)
+        callback(account)
+    })
+};
+
 exports.registerPatientInContract = function (account, password, contractAddress, contract, id, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
@@ -7,11 +17,9 @@ exports.registerPatientInContract = function (account, password, contractAddress
             data: contract.methods.register(id).encodeABI()
         })
             .then((data) => {
-                console.log('REGISTERED IN CONTRACT ', data);
                 callback(data);
             })
             .catch((err) => {
-                console.log(err);
                 callback(err);
             });
     });
@@ -25,16 +33,13 @@ exports.getPatientDataFromContract = function (account, password, contract, call
             contract.methods.identifier().call(null, (err, identifier) => {
                 contract.methods.donor().call(null, (err, donor) => {
                     contract.methods.receiver().call(null, (err, receiver) => {
-                        contract.methods.getTrustedPerson().call(null, (err, trustedPerson) => {
-                            let patient = {
-                                owner: owner,
-                                identifier: identifier,
-                                donor: donor,
-                                receiver: receiver,
-                                trustedPerson: trustedPerson
-                            };
-                            callback(patient);
-                        })
+                        let patient = {
+                            owner: owner,
+                            identifier: identifier,
+                            donor: donor,
+                            receiver: receiver
+                        };
+                        callback(patient);
                     })
                 })
             });
@@ -89,10 +94,10 @@ exports.addOrganToMap = function (account, password, organ, contractAddress, con
     })
 };
 
+//sa fac si pentru doctor functie ca sa semneze el tranzactia
 exports.addFileHash = function (account, password, hash, name, contractAddress, contract, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
-        console.log(contract.methods)
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
@@ -134,7 +139,7 @@ exports.markPatientAsDonor = function (account, password, contractAddress, contr
             to: contractAddress,
             from: account,
             data: contract.methods.markPatientAsDonor().encodeABI(),
-            gasPrice: 5000
+            gasPrice: 8000
         })
             .then((data) => {
                 callback(data);
@@ -175,46 +180,39 @@ function getMapping(contract, hash) {
     }))
 }
 
-exports.createRequest = function (account, password, contractAddress, contract, docContractAddress, fileHash,fileName, callback) {
+exports.createRequest = function (account, password, contractAddress, contract, mapKey, docContractAddress, fileHash, fileName, callback) {
+
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) callback(err);
-        web3.eth.getGasPrice()
-            .then((result) => {
-                var mapKey = docContractAddress + fileHash;
-                web3.eth.sendTransaction({
-                    to: contractAddress,
-                    from: account,
-                    data: contract.methods.createRequest(mapKey, new Date(),fileHash, fileName).encodeABI(),
-                    gasPrice: web3.utils.fromWei(result, 'ether')
-                })
-                    .then((data) => {
-                        callback(data);
-                    })
-                    .catch((err) => {
-                        callback(err);
-                    })
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.createRequest(mapKey, new Date().toString(), fileHash, fileName).encodeABI(),
+            gasPrice: 7000
+        })
+            .then((data) => {
+                callback(data, null);
+            })
+            .catch((err) => {
+                callback(null, err);
             })
     })
 };
 
-exports.approveRequest = function (account, password, contractAddress, contract, docContractAddress, callback) {
+exports.approveRequest = function (account, password, contractAddress, contract, docContractAddress, mapKey, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) callback(err);
-        web3.eth.getGasPrice()
-            .then((result) => {
-                var mapKey = docContractAddress + fileHash;
-                web3.eth.sendTransaction({
-                    to: contractAddress,
-                    from: account,
-                    data: contract.methods.approveRequest(mapKey, new Date(), contractAddress).encodeABI(),
-                    gasPrice: web3.utils.fromWei(result, 'ether')
-                })
-                    .then((data) => {
-                        callback(data);
-                    })
-                    .catch((err) => {
-                        callback(err);
-                    })
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.approveRequest(mapKey, new Date().toString(), account).encodeABI(),
+            gasPrice: 5000
+        })
+            .then((data) => {
+                callback(data, null);
+            })
+            .catch((err) => {
+                callback(null, err);
             })
     })
 };
@@ -222,20 +220,17 @@ exports.approveRequest = function (account, password, contractAddress, contract,
 exports.setTrustedPerson = function (account, password, contract, contractAddress, personAddress, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) callback(err);
-        web3.eth.getGasPrice()
-            .then((result) => {
-                web3.eth.sendTransaction({
-                    to: contractAddress,
-                    from: account,
-                    data: contract.methods.setTrustedPerson(personAddress).encodeABI(),
-                    gasPrice: web3.utils.fromWei(result, 'ether')
-                })
-                    .then((data) => {
-                        callback(data);
-                    })
-                    .catch((err) => {
-                        callback(err);
-                    })
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.setTrustedPerson(personAddress).encodeABI(),
+            gasPrice: 5000
+        })
+            .then((data) => {
+                callback(data);
+            })
+            .catch((err) => {
+                callback(err);
             })
     })
 };
@@ -251,13 +246,20 @@ exports.getRequests = function (account, password, contract, callback) {
             for (let i = 0; i < number; i++) {
                 let req = await getRequestFromArray(contract, i);
                 let obj = await getRequestsFromMapping(contract, req);
+                let doc = await getDoctor(obj.requestedBy);
                 requests.push(req);
-                myMap.push({mapKey: req, request: obj});
+                myMap.push({mapKey: req, request: obj, doctor: doc});
             }
             callback(myMap);
         })
     })
 };
+
+function getDoctor(account) {
+    return new Promise(resolve => doctorDao.getDoctorByAccount(account, (doc) => {
+        resolve(doc);
+    }))
+}
 
 function getRequestFromArray(contract, number) {
     return new Promise(resolve => contract.methods.requestsArray(number).call(null, (err, doc) => {
@@ -270,3 +272,4 @@ function getRequestsFromMapping(contract, mapKey) {
         resolve(doc);
     }))
 }
+

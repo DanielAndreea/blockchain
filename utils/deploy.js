@@ -1,7 +1,7 @@
 exports.deploy = function (abi, bin, account, password, callback) {
+    console.log(account)
+    console.log(password)
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
-        console.log(account)
-        console.log(password)
         if (err) {
             console.log('Account cannot be unlocked ', err);
         } else {

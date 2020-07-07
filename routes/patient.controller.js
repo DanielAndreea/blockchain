@@ -104,6 +104,7 @@ router.post('/markDonor', (req, res) => {
     const doctorUsername = req.body.doctorUsername;
     const patientUsername = req.body.patientUsername;
     PatientService.markPatientAsDonor(parsedABI, doctorUsername, patientUsername, (response) => {
+        console.log(response)
         RegistryService.markDonor(registryParsedABI, doctorUsername, patientUsername, (resp) => {
             res.send(resp)
         });
@@ -126,7 +127,8 @@ router.post('/createRequest', (req, res) => {
     const patient = req.body.patientUsername;
     const hash = req.body.fileHash;
     const name = req.body.fileName;
-    PatientService.createRequest(parsedABI, doctor, patient, hash, name, (response) => {
+    PatientService.createRequest(parsedABI, doctor, patient, hash, name, (response,err) => {
+        if(err) res.send('Error');
         res.send(response);
     })
 });
@@ -135,7 +137,9 @@ router.post('/approveRequest', (req, res) => {
     const doctor = req.body.doctorUsername;
     const patient = req.body.patientUsername;
     const hash = req.body.fileHash;
-    PatientService.approveRequest(parsedABI, doctor, patient, hash, (response) => {
+    const mapKey = req.body.id;
+    PatientService.approveRequest(parsedABI, doctor, patient, hash,mapKey, (response,err) => {
+        if (err) res.send('Error');
         res.send(response);
     })
 });
