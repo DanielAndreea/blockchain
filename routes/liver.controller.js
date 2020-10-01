@@ -13,16 +13,16 @@ var parsedABI = JSON.parse(fs.readFileSync(path.resolve(abiJSON)));
 var binJSON = '././contracts/compiled/PatientContract_sol_PatientContract.bin';
 var BIN = fs.readFileSync(path.resolve(binJSON));
 
-var liverAbiJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.abi';
+var liverAbiJSON = '././contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.abi';
 var liverParsedABI = JSON.parse(fs.readFileSync(path.resolve(liverAbiJSON)));
 
-var liverBinJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.bin';
+var liverBinJSON = '././contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.bin';
 var liverBIN = fs.readFileSync(path.resolve(liverBinJSON));
 
-var registryAbiJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.abi';
+var registryAbiJSON = '././contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.abi';
 var registryParsedABI = JSON.parse(fs.readFileSync(path.resolve(registryAbiJSON)));
 
-var registryBinJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.bin';
+var registryBinJSON = '././contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.bin';
 var registryBIN = fs.readFileSync(path.resolve(registryBinJSON));
 
 

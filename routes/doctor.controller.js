@@ -19,10 +19,10 @@ var patientParsedABI = JSON.parse(fs.readFileSync(path.resolve(patientAbiJSON)))
 var patientBinJSON = '././contracts/compiled/PatientContract_sol_PatientContract.bin';
 var patientBIN = fs.readFileSync(path.resolve(patientBinJSON));
 
-var liverAbiJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.abi';
+var liverAbiJSON = '././contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.abi';
 var liverParsedABI = JSON.parse(fs.readFileSync(path.resolve(liverAbiJSON)));
 
-var liverBinJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.bin';
+var liverBinJSON = '././contracts/compiled/D__LICENTA_code_blockchain_contracts_Liver_sol_Liver.bin';
 var liverBIN = fs.readFileSync(path.resolve(liverBinJSON));
 
 router.post('/deploy', (req, res) => {

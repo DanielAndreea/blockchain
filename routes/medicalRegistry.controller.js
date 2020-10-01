@@ -4,10 +4,10 @@ var RegistryService = require('../bll/medicalRegistry.bll');
 var fs = require('fs');
 var path = require('path');
 
-var registryAbiJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.abi';
+var registryAbiJSON = '././contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.abi';
 var registryParsedABI = JSON.parse(fs.readFileSync(path.resolve(registryAbiJSON)));
 
-var registryBinJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.bin';
+var registryBinJSON = '././contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.bin';
 var registryBIN = fs.readFileSync(path.resolve(registryBinJSON));
 
 var patientAbiJSON = '././contracts/compiled/PatientContract_sol_PatientContract.abi';
