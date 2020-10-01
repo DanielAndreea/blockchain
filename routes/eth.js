@@ -24,7 +24,6 @@ router.get('/accounts', function(req,res,next){
 
 //transaction using ganache accounts
 router.post('/transaction', function(req,res,next){
-  console.log('provider' , web3.currentProvider);
   web3.eth.isMining().then(console.log);
   var acc1 = '0xf49ad8b5B0218d457f7763E212Cc2904E8965d92';
   var acc2 = '0xFC707311C55b0C3F04B6b461D6849ABC7A235b80';

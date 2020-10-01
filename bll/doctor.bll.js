@@ -114,7 +114,7 @@ exports.consultPatient = function (docAbi, patientAbi, ssn, patientUsername, doc
     })
 };
 
-exports.getConsultedPatient = function (abi,  username, patientUsername, callback) {
+exports.getConsultedPatient = function (abi, username, patientUsername, callback) {
     doctorDao.getDoctorByUsername(username, (doctor) => {
         doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
             loadService.loadContract(abi, contractAddress, (contract) => {
@@ -133,7 +133,7 @@ exports.getConsultedPatient = function (abi,  username, patientUsername, callbac
     })
 };
 
-exports.getAllConsultedPatients = function (abi,patientAbi, username, callback) {
+exports.getAllConsultedPatients = function (abi, patientAbi, username, callback) {
     var patients = [];
     doctorDao.getDoctorByUsername(username, (doctor) => {
         doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
@@ -142,8 +142,10 @@ exports.getAllConsultedPatients = function (abi,patientAbi, username, callback) 
                     doctor[0].accountPassword,
                     contract,
                     async (res) => {
+                        console.log(res)
                         for (let i = 0; i < res.length; i++) {
                             let p = await patientBll.getPatientByAccount(res[i]);
+                            console.log(p)
                             let obj = await patientBll.getPatientFromContractByUsername(patientAbi, p[0].username)
                             let myPatient = {
                                 username: p[0].username,
@@ -154,6 +156,21 @@ exports.getAllConsultedPatients = function (abi,patientAbi, username, callback) 
                             patients.push(myPatient)
                         }
                         callback(patients)
+                    })
+            })
+        })
+    })
+};
+
+exports.getRequests = function (abi, username, callback) {
+    doctorDao.getDoctorByUsername(username, (doctor) => {
+        doctorDao.getContractAddressByAccount(doctor[0].account, (contractAddress) => {
+            loadService.loadContract(abi, contractAddress, (contract) => {
+                ethDoctorDao.getRequests(doctor[0].account,
+                    doctor[0].accountPassword,
+                    contract,
+                    (response) => {
+                        callback(response)
                     })
             })
         })

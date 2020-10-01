@@ -1,6 +1,6 @@
 exports.generateNewAccount = function (user, callback) {
-    web3.eth.personal.newAccount(user, (error,account) =>{
-        if(error) console.log(error)
+    web3.eth.personal.newAccount(user, (error, account) => {
+        if (error) console.log(error);
         callback(account)
     })
 };
@@ -75,7 +75,7 @@ exports.getConsultedPatient = function (account, password, contract, contractAdd
             {
                 from: account
             }, (err, contractAddress) => {
-                if (err) console.log(err)
+                if (err) console.log(err);
                 callback(contractAddress);
             }
         )
@@ -102,5 +102,70 @@ exports.getAllConsultedPatients = function (account, password, contract, callbac
 function getContractPatientsArray(contract, number) {
     return new Promise(resolve => contract.methods.patientsArray(number).call(null, (err, contractAddress) => {
         resolve(contractAddress);
+    }))
+}
+
+exports.createRequest = function (account, password, contractAddress, contract, mapKey, fileHash, fileName, callback) {
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) callback(err);
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.createRequest(mapKey, new Date().toString(), fileHash, fileName).encodeABI()
+        })
+            .then((data) => {
+                callback(data, null);
+            })
+            .catch((err) => {
+                callback(null, err);
+            })
+    })
+};
+
+exports.approveRequest = function (account, password, contractAddress, contract, mapKey, callback) {
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) callback(err);
+        web3.eth.sendTransaction({
+            to: contractAddress,
+            from: account,
+            data: contract.methods.approveRequest(mapKey, new Date().toString()).encodeABI()
+        })
+            .then((data) => {
+                callback(data, null);
+            })
+            .catch((err) => {
+                callback(null, err);
+            })
+    })
+};
+
+exports.getRequests = function (account, password, contract, callback) {
+    var requests = [];
+    var myMap = [];
+    web3.eth.personal.unlockAccount(account, password, null, (err) => {
+        if (err) console.log(err);
+        contract.methods.numberOfRequests().call(null, async (err, number) => {
+            if (err) console.log(err);
+            for (let i = 0; i < number; i++) {
+                let req = await getRequestFromArray(contract, i);
+                let obj = await getRequestsFromMapping(contract, req);
+                requests.push(req);
+                myMap.push({mapKey: req, request: obj});
+            }
+            callback(myMap);
+        })
+    })
+};
+
+
+function getRequestFromArray(contract, number) {
+    return new Promise(resolve => contract.methods.requestsArray(number).call(null, (err, doc) => {
+        resolve(doc);
+    }))
+}
+
+function getRequestsFromMapping(contract, mapKey) {
+    return new Promise(resolve => contract.methods.requests(mapKey).call(null, (err, doc) => {
+        resolve(doc);
     }))
 }

@@ -3,7 +3,7 @@ var doctorDao = require('../dao/doctor.dao');
 
 exports.generateNewAccount = function (user, callback) {
     web3.eth.personal.newAccount(user, (error, account) => {
-        if (error) console.log(error)
+        if (error) console.log(error);
         callback(account)
     })
 };
@@ -64,8 +64,7 @@ exports.addDoctorToPatientMap = function (account, password, doctorContractAddre
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.addDoctorToPatientMap(doctorContractAddress, status).encodeABI(),
-            gasPrice: 100
+            data: contract.methods.addDoctorToPatientMap(doctorContractAddress, status).encodeABI()
         })
             .then((data) => {
                 callback(data);
@@ -82,8 +81,7 @@ exports.addOrganToMap = function (account, password, organ, contractAddress, con
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.addOrganToMap(organ.toString()).encodeABI(),
-            gasPrice: 100
+            data: contract.methods.addOrganToMap(organ.toString()).encodeABI()
         })
             .then((data) => {
                 callback(data, null);
@@ -94,7 +92,6 @@ exports.addOrganToMap = function (account, password, organ, contractAddress, con
     })
 };
 
-//sa fac si pentru doctor functie ca sa semneze el tranzactia
 exports.addFileHash = function (account, password, hash, name, contractAddress, contract, callback) {
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) console.log(err);
@@ -138,8 +135,7 @@ exports.markPatientAsDonor = function (account, password, contractAddress, contr
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.markPatientAsDonor().encodeABI(),
-            gasPrice: 8000
+            data: contract.methods.markPatientAsDonor().encodeABI()
         })
             .then((data) => {
                 callback(data);
@@ -156,8 +152,7 @@ exports.markPatientAsReceiver = function (account, password, contractAddress, co
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.markPatientAsReceiver().encodeABI(),
-            gasPrice: 5000
+            data: contract.methods.markPatientAsReceiver().encodeABI()
         })
             .then((data) => {
                 callback(data);
@@ -187,8 +182,7 @@ exports.createRequest = function (account, password, contractAddress, contract, 
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.createRequest(mapKey, new Date().toString(), fileHash, fileName).encodeABI(),
-            gasPrice: 7000
+            data: contract.methods.createRequest(mapKey, new Date().toString(), fileHash, fileName).encodeABI()
         })
             .then((data) => {
                 callback(data, null);
@@ -205,8 +199,7 @@ exports.approveRequest = function (account, password, contractAddress, contract,
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.approveRequest(mapKey, new Date().toString(), account).encodeABI(),
-            gasPrice: 5000
+            data: contract.methods.approveRequest(mapKey, new Date().toString(), account).encodeABI()
         })
             .then((data) => {
                 callback(data, null);
@@ -223,8 +216,7 @@ exports.setTrustedPerson = function (account, password, contract, contractAddres
         web3.eth.sendTransaction({
             to: contractAddress,
             from: account,
-            data: contract.methods.setTrustedPerson(personAddress).encodeABI(),
-            gasPrice: 5000
+            data: contract.methods.setTrustedPerson(personAddress).encodeABI()
         })
             .then((data) => {
                 callback(data);

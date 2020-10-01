@@ -1,6 +1,4 @@
 exports.deploy = function (abi, bin, account, password, callback) {
-    console.log(account)
-    console.log(password)
     web3.eth.personal.unlockAccount(account, password, null, (err) => {
         if (err) {
             console.log('Account cannot be unlocked ', err);
@@ -14,13 +12,12 @@ exports.deploy = function (abi, bin, account, password, callback) {
             .send({
                 from: account,
                 gas: 5000000,
-                gasPrice: 100 //OBLIGATORIU
+                gasPrice: 100
             })
             .on("receipt", (receipt) => {
                 console.log(receipt);
             })
             .then((instance) => {
-                console.log("CONTRACT DEPLOYED AT ADDRESS: ", instance.options.address);
                 callback(instance.options.address);
             })
             .catch(console.log);

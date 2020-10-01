@@ -1,15 +1,13 @@
-var crypto = require('crypto');
-var pdf = require('html-pdf');
-var Duplex = require('readable-stream').Duplex;
 var fs = require('fs');
 var openpgp = require('openpgp');
 var userService = require('./user.bll')
 
+// reference: https://openpgpjs.org/openpgpjs/doc/
 exports.generateKeys = function (username, callback) {
     let keyOptions = {
         rsaBits: 2048,
         passphrase: 'something-secret',
-        userIds: [{name: 'username', email: 'jon@example.com'}]
+        userIds: [{name: 'andreea', email: 'andreea@example.com'}]
     };
 
     openpgp.generateKey(keyOptions)
@@ -35,30 +33,22 @@ exports.encryptFile = function (file, username, callback) {
     var fileForEncrypt = new Buffer(file, 'binary');
 
     let publicKeyFile = 'public_' + username + '.txt';
-    // fs.readFile(publicKeyFile, 'utf8', async (error, publicKey) => {
-        userService.getPublicKeyByUser(username, async (user,error) =>{
-            console.log(user[0].publicKey)
-            openpgp.initWorker({});
-            const key = await openpgp.key.readArmored(user[0].publicKey);
+    userService.getPublicKeyByUser(username, async (user, error) => {
+        openpgp.initWorker({});
+        const key = await openpgp.key.readArmored(user[0].publicKey);
 
-            const options = {
-                message: await openpgp.message.fromBinary(fileForEncrypt),
-                publicKeys: key.keys
-            };
+        const options = {
+            message: await openpgp.message.fromBinary(fileForEncrypt),
+            publicKeys: key.keys
+        };
 
-            const encrypted = await openpgp.encrypt(options);
-            //
-            // fs.writeFile('encrypted.txt', encrypted.data, null, (error) => {
-            //     if (error) console.log(error);
-            //     else console.log('saved in encrypted.txt');
-            // });
-            callback(encrypted.data);
+        const encrypted = await openpgp.encrypt(options);
 
-            if (error) console.log(error);
+        callback(encrypted.data);
 
-        })
+        if (error) console.log(error);
+    })
 
-    // })
 };
 
 exports.decryptFile = function (file, username, callback) {
@@ -85,16 +75,6 @@ exports.decryptFile = function (file, username, callback) {
                 fs.writeFile(decryptedPath, decrypted.data, {encoding: 'binary'}, (error) => {
                     if (error) callback(error);
                 });
-                // fs.open('content.pdf', 'w', (err, fd) => {
-                //
-                //     if (err) {
-                //         return;
-                //     }
-                //
-                //     fs.writeFile(fd, decrypted.data, {encoding: 'binary'}, (error) => {
-                //         if (error) callback(error);
-                //     });
-                // });
 
                 callback(decrypted.data);
 
@@ -102,6 +82,5 @@ exports.decryptFile = function (file, username, callback) {
             .catch((error) => {
                 callback(error)
             });
-
     })
 };

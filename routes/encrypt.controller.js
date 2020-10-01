@@ -7,7 +7,6 @@ var fs = require('fs');
 
 router.post('/generateKeys', (req, res) => {
     encryptService.generateKeys(req.body.username, (data) => {
-        console.log(data)
         res.send(data)
     });
 });
@@ -19,7 +18,6 @@ router.post('/encryptFile', (req, res) => {
             res.send(data);
         })
     });
-
 });
 
 router.post('/decryptFile', (req, res) => {
@@ -33,15 +31,15 @@ router.post('/decryptFile', (req, res) => {
 
 router.get('/download/:username', (req, res) => {
     let file = 'file_' + req.params.username + '.txt';
-    if(fs.existsSync(file)){
+    if (fs.existsSync(file)) {
         fs.readFile(file, (err, data) => {
             if (err) res.send(err);
-            fs.unlink(file, (err) =>{
-                if(err) res.send(err);
+            fs.unlink(file, (err) => {
+                if (err) res.send(err);
                 res.send(new Buffer(data, 'binary'));
             });
         });
-    }else{
+    } else {
         res.send({code: 500, message: 'No permission'});
     }
 

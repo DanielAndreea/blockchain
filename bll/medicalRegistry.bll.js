@@ -106,12 +106,14 @@ exports.getReceiversFinal = function (patientAbi, doctorAbi, list, callback) {
     )
 };
 
+//reference: https://www.guru99.com/quicksort-in-javascript.html
 function swap(items, leftIndex, rightIndex) {
     var temp = items[leftIndex];
     items[leftIndex] = items[rightIndex];
     items[rightIndex] = temp;
 }
 
+//reference: https://www.guru99.com/quicksort-in-javascript.html
 function partition(items, left, right) {
     var pivot = parseInt(items[Math.floor((right + left) / 2)].info.info.score);
     var i = left;
@@ -132,6 +134,7 @@ function partition(items, left, right) {
     return i;
 }
 
+//reference: https://www.guru99.com/quicksort-in-javascript.html
 function quickSort(items, left, right) {
     var index;
     if (items.length > 1) {

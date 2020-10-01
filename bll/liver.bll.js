@@ -32,7 +32,7 @@ exports.getScoreByDoctor = function(abi,username,organContractAddress,callback){
             })
         })
     })
-}
+};
 
 exports.getScoreByPatient = function(abi,username,organContractAddress, callback){
     patientDao.getPatientByUsername(username, (patient) => {
@@ -45,4 +45,4 @@ exports.getScoreByPatient = function(abi,username,organContractAddress, callback
             })
         })
     })
-}
+};

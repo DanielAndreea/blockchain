@@ -12,7 +12,7 @@ exports.login = function (username, password, callback) {
                     else callback('Wrong credentials');
                 } else callback('Wrong credentials');
             })
-            .catch((error) => console.log(error))
+            .catch((error) => callback(error))
     } catch (error) {
         callback(error);
     }

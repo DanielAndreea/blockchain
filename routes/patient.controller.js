@@ -24,6 +24,12 @@ var registryParsedABI = JSON.parse(fs.readFileSync(path.resolve(registryAbiJSON)
 var registryBinJSON = 'D:/LICENTA/code/blockchain/contracts/compiled/MedicalRegistryContract_sol_MedicalRegistry.bin';
 var registryBIN = fs.readFileSync(path.resolve(registryBinJSON));
 
+var docabiJSON = '././contracts/compiled/DoctorContract_sol_DoctorContract.abi';
+var docparsedABI = JSON.parse(fs.readFileSync(path.resolve(docabiJSON)));
+
+var docbinJSON = '././contracts/compiled/DoctorContract_sol_DoctorContract.bin';
+var docBIN = fs.readFileSync(path.resolve(docbinJSON));
+
 router.post('/deploy', (req, res) => {
     const username = req.body.username;
     PatientService.deployPatientContract(username, parsedABI, '0x' + BIN, (data) => {
@@ -104,7 +110,6 @@ router.post('/markDonor', (req, res) => {
     const doctorUsername = req.body.doctorUsername;
     const patientUsername = req.body.patientUsername;
     PatientService.markPatientAsDonor(parsedABI, doctorUsername, patientUsername, (response) => {
-        console.log(response)
         RegistryService.markDonor(registryParsedABI, doctorUsername, patientUsername, (resp) => {
             res.send(resp)
         });
@@ -127,8 +132,8 @@ router.post('/createRequest', (req, res) => {
     const patient = req.body.patientUsername;
     const hash = req.body.fileHash;
     const name = req.body.fileName;
-    PatientService.createRequest(parsedABI, doctor, patient, hash, name, (response,err) => {
-        if(err) res.send('Error');
+    PatientService.createRequest(parsedABI, docparsedABI, doctor, patient, hash, name, (response, err) => {
+        if (err) res.send('Error');
         res.send(response);
     })
 });
@@ -138,7 +143,7 @@ router.post('/approveRequest', (req, res) => {
     const patient = req.body.patientUsername;
     const hash = req.body.fileHash;
     const mapKey = req.body.id;
-    PatientService.approveRequest(parsedABI, doctor, patient, hash,mapKey, (response,err) => {
+    PatientService.approveRequest(parsedABI, docparsedABI, doctor, patient, hash, mapKey, (response, err) => {
         if (err) res.send('Error');
         res.send(response);
     })
